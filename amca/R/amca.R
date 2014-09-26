@@ -64,13 +64,14 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
   #*****************************************************************************
   message("PRELIMINARY SELECTION...")
   #*****************************************************************************
-  myThreshold <- SetThreshold(ModelList, Indices, verbose)
+  myThreshold <- SetThreshold(ModelList, Indices, verbose,
+                              selectM=TRUE,selectP=FALSE)
   message(paste("Automatically generated threshold:", myThreshold))
 
   PreSelRealisations <- PreSelection(ModelList,
                                      Indices,
                                      myThreshold,
-                                     selectM=TRUE, selectP=TRUE)
+                                     selectM=TRUE,selectP=FALSE)
 
   PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
                              parameters, ObsIndices, verbose)
