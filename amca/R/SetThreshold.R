@@ -44,22 +44,20 @@ SetThreshold <- function(ModelList, Indices, verbose,
     threshold <- seq(1,0.1,-0.1)[which(normalizedSUM==min(normalizedSUM))][1]
   }
 
-#   if (verbose==TRUE) {
-#
-#     x <- seq(1,0.1,-0.1)
-#     y <- normalizedSUM
-#
-#     df <- data.frame(x, y)
-#
-#     # Plot normalized sum of suitable models and parameters
-#     p <- ggplot(data=df) +
-#       geom_line(aes(x = x, y = y)) +
-#       geom_point(x = threshold, y = min(normalizedSUM), color="red", size=3) +
-#       xlab("") + ylab("") + theme_bw()
-#
-#     print(p)
-#
-#   }
+  if (verbose==TRUE) {
+
+    x <- seq(1,0.1,-0.1)
+    y <- normalizedSUM
+
+    df <- data.frame(x, y)
+
+    # Plot normalized sum of suitable models and parameters
+    ggplot(data=df) +
+      geom_line(aes(x = x, y = y)) +
+      geom_point(x = threshold, y = min(normalizedSUM), color="red", size=3) +
+      xlab("") + ylab("") + theme_bw()
+
+  }
 
   return(threshold)
 
