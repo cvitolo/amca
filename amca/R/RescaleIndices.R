@@ -17,8 +17,8 @@ RescaleIndices <- function(Indices,ObsIndices) {
 
   x[,1,] <- abs(Indices[,1,])                       # LAGTIME
   x[,2,] <- abs(Indices[,2,])                       # MAE
-  x[,3,] <- abs(Indices[,3,])                       # NSHF
-  x[,4,] <- abs(Indices[,4,])                       # NSLF
+  x[,3,] <- Indices[,3,]                            # NSHF
+  x[,4,] <- Indices[,4,]                            # NSLF
   x[,5,] <- abs(Indices[,5,] - ObsIndices$RR)       # RR
 
   # Normalize the values so that they vary between 0 and 1
