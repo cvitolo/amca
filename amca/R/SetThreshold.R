@@ -35,13 +35,18 @@ SetThreshold <- function(ModelList, Indices, verbose,
 
   }
 
-  normalizedSUM <- PIDs/1248 + MIDs/1000
-  minNparams <- 1
-  rows2remove <- c(which(MIDs <= minNparams),which(PIDs <= minNparams))
-  if (length(rows2remove)>0){
-    threshold <- seq(1,0.1,-0.1)[which(normalizedSUM==min(normalizedSUM[-rows2remove]))][1]
-  }else{
+  if (selectP==FALSE){
+    normalizedSUM <- MIDs
     threshold <- seq(1,0.1,-0.1)[which(normalizedSUM==min(normalizedSUM))][1]
+  }else{
+    normalizedSUM <- PIDs/1248 + MIDs/1000
+    minNparams <- 1
+    rows2remove <- c(which(MIDs <= minNparams),which(PIDs <= minNparams))
+    if (length(rows2remove)>0){
+      threshold <- seq(1,0.1,-0.1)[which(normalizedSUM==min(normalizedSUM[-rows2remove]))][1]
+    }else{
+      threshold <- seq(1,0.1,-0.1)[which(normalizedSUM==min(normalizedSUM))][1]
+    }
   }
 
   if (verbose==TRUE) {
@@ -55,7 +60,7 @@ SetThreshold <- function(ModelList, Indices, verbose,
     ggplot(data=df) +
       geom_line(aes(x = x, y = y)) +
       geom_point(x = threshold, y = min(normalizedSUM), color="red", size=3) +
-      xlab("") + ylab("") + theme_bw()
+      xlab("Threshold") + ylab("Model structures after pre-selection") + theme_bw()
 
   }
 

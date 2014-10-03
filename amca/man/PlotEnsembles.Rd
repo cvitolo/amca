@@ -4,7 +4,7 @@
 \title{Compare 2 distributions percentiles over time.}
 \usage{
 PlotEnsembles(bounds, dischargeTable, lowerP = 5, upperP = 95,
-  label1 = "T limits", label2 = "T' percentiles")
+  label1 = "T limits", label2 = "T' percentiles", type = "B")
 }
 \arguments{
 \item{bounds}{This is a data.frame structured into five columns:
@@ -24,6 +24,8 @@ PlotEnsembles(bounds, dischargeTable, lowerP = 5, upperP = 95,
 \item{label1}{label for the x-axis.}
 
 \item{label2}{label for the y-axis.}
+
+\item{type}{If "B" means the reference is min-max. If "P" it means the reference is lower-upper percentile.}
 }
 \value{
 A plot comparing ensemble distributions.

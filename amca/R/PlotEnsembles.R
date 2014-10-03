@@ -12,6 +12,7 @@
 #' @param upperP upper percentile to visualise in red (default = 95)
 #' @param label1 label for the x-axis.
 #' @param label2 label for the y-axis.
+#' @param type If "B" means the reference is min-max. If "P" it means the reference is lower-upper percentile.
 #'
 #' @return A plot comparing ensemble distributions.
 #'
@@ -20,23 +21,23 @@
 #'
 
 PlotEnsembles <- function(bounds, dischargeTable,lowerP=5,upperP=95,
-                          label1="T limits",label2="T' percentiles"){
+                          label1="T limits",label2="T' percentiles",type="B"){
 
   # require(fanplot)
   # require(colorspace)
   # require(RColorBrewer)
 
-#   if (!is.na(bounds[1,"UP"])){
-#     L <- bounds$LP
-#     U <- bounds$UP
-#     boundsMax <- max(unlist(U),unlist(dischargeTable))
-#    boundsMin <- min(unlist(L),unlist(dischargeTable))
-  #}else{
+  if (type=="P"){
+    L <- bounds$LP
+    U <- bounds$UP
+    boundsMax <- max(unlist(U),unlist(dischargeTable))
+   boundsMin <- min(unlist(L),unlist(dischargeTable))
+  }else{
     L <- bounds$LB
     U <- bounds$UB
     boundsMax <- max(U)
     boundsMin <- min(L)
-  #}
+  }
 
   plot(NULL, xlim = c(-15, dim(dischargeTable)[2]+15),
        ylim =c(boundsMin,boundsMax),

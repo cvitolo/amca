@@ -3,7 +3,8 @@
 \alias{amca}
 \title{Run the AMCA algorithm.}
 \usage{
-amca(DATA, ModelList, warmup, parameters, ResultsFolder, verbose = FALSE)
+amca(DATA, parameters, MPIs, ResultsFolder, selectedModels = NULL,
+  warmup = 0, verbose = FALSE)
 }
 \arguments{
 \item{DATA}{This is a data.frame containing the observed time series (zoo objects).
@@ -12,15 +13,17 @@ It is structured into three columns:
 "E" containing evapo-transpiration and
 "Q" containing streamflow discharge.}
 
-\item{ModelList}{a table that contains at list 1 colum named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored.}
-
-\item{warmup}{Number of initial time steps to ignore.}
-
 \item{parameters}{This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.}
+
+\item{MPIs}{list of functions describing the Model performance Indices.}
 
 \item{ResultsFolder}{Path to the folder containing results from MC simulations.}
 
-\item{verbose}{if set to TRUE it prints running information}
+\item{selectedModels}{(OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).}
+
+\item{warmup}{Number of initial time steps to ignore (default = 0).}
+
+\item{verbose}{if set to TRUE it prints running information (default = FALSE).}
 }
 \value{
 A list of objects to infer.
@@ -29,6 +32,6 @@ A list of objects to infer.
 Run the AMCA algorithm.
 }
 \examples{
-# results <- damach(DATA, ModelList, warmup, parameters, ResultsFolder)
+# results <- damach( DATA, parameters, MPIs, ResultsFolder )
 }
 

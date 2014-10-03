@@ -5,34 +5,55 @@
 #'             "P" containing precipitation,
 #'             "E" containing evapo-transpiration and
 #'             "Q" containing streamflow discharge.
-#' @param ModelList a table that contains at list 1 colum named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored.
-#' @param warmup Number of initial time steps to ignore.
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
+#' @param MPIs list of functions describing the Model performance Indices.
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
-#' @param verbose if set to TRUE it prints running information
+#' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
+#' @param warmup Number of initial time steps to ignore (default = 0).
+#' @param verbose if set to TRUE it prints running information (default = FALSE).
 #'
 #' @return A list of objects to infer.
 #'
 #' @examples
-#' # results <- damach(DATA, ModelList, warmup, parameters, ResultsFolder)
+#' # results <- damach( DATA, parameters, MPIs, ResultsFolder )
 #'
 
-amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
-                 verbose=FALSE){
+amca <- function(DATA, parameters, MPIs, ResultsFolder,
+                 selectedModels=NULL, warmup=0, verbose=FALSE){
 
-  options(warn=-1) # do not print warnings
+  # options(warn=-1) # do not print warnings
 
-  observedQ <- coredata(DATA[(warmup+1):dim(DATA)[1],"Q"])
+  # load list of availabe models
+  load(system.file("data/modlist.rda", package = "fuse"))
+  modlist <- modlist # to remove NOTE in R CMD check
+  ModelList <- PrepareTable() ; rm(modlist)
 
-  #*****************************************************************************
-  # message("CALCULATING TRUE VALUES FOR INDICES...")
-  #*****************************************************************************
+  if (!is.null(selectedModels)){
+
+    selectedRows <- which(ModelList$mid %in% selectedModels)
+    ModelList <- ModelList[selectedRows,]
+
+  }else{
+
+    if (all(parameters$rferr_add==0) & all(parameters$rferr_mlt==1)){
+      selectedRows <- which(ModelList$rferr==11)
+      ModelList <- ModelList[selectedRows,]
+    }
+
+  }
 
   pperiod <- (warmup + 1):dim(DATA)[1] # performance period
 
-  ObsIndices <- PerformanceIndices(Po=coredata(DATA[pperiod,"P"]),
-                                   Qo=coredata(DATA[pperiod,"Q"]),
-                                   Qs=coredata(DATA[pperiod,"Q"]))
+  observedQ <- coredata(DATA[pperiod,"Q"])
+
+  #***************************************************************************
+  # message("CALCULATING TRUE VALUES FOR INDICES...")
+  #***************************************************************************
+  x <- data.frame( Po = coredata(DATA[pperiod,"P"]),
+                   Qo = observedQ,
+                   Qs = observedQ )
+
+  ObsIndices <- lapply(MPIs, function(f) sapply(list(x), function(d) f(d) ) )
 
   nParams <- dim(parameters)[1]        # number of parameters
   nModels <- dim(ModelList)[1]         # number of model structures
@@ -41,9 +62,9 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
   AllRealisations <- data.frame(table("mid"=rep(ModelList[,"mid"], nParams),
                                       "pid"=rep(seq(1:nParams), nModels) ) )
 
-  #*****************************************************************************
+  #***************************************************************************
   message("GENERATING THE INITIAL ENSEMBLE FROM THE RESULT SPACE...")
-  #*****************************************************************************
+  #***************************************************************************
 
   arrayP <- Simulations2Indices(ModelList,
                                 ResultsFolder,
@@ -61,17 +82,19 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
                             maxminOnly = TRUE,
                             verbose = TRUE)
 
-  #*****************************************************************************
+  #***************************************************************************
   message("PRELIMINARY SELECTION...")
-  #*****************************************************************************
-  myThreshold <- SetThreshold(ModelList, Indices, verbose,
-                              selectM=TRUE,selectP=FALSE)
+  #***************************************************************************
+  # Pre-selection mode
+  selectM <- TRUE
+  selectP <- FALSE
+
+  myThreshold <- SetThreshold(ModelList, Indices, verbose, selectM, selectP)
+
   message(paste("Automatically generated threshold:", myThreshold))
 
-  PreSelRealisations <- PreSelection(ModelList,
-                                     Indices,
-                                     myThreshold,
-                                     selectM=TRUE,selectP=FALSE)
+  PreSelRealisations <- PreSelection(ModelList, Indices, myThreshold,
+                                     selectM, selectP)
 
   PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
                              parameters, ObsIndices, verbose)
@@ -89,9 +112,9 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
                                  lowerP=0.05, upperP=0.95,
                                  verbose)
 
-  #*****************************************************************************
+  #***************************************************************************
   message("PARETO FRONTIER...")
-  #*****************************************************************************
+  #***************************************************************************
   ParetoFrontTable <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
 
   message(paste("Selected models: ",
@@ -112,17 +135,17 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
     message("The Pareto Front is made of 1 realization: MID =",
             ParetoFrontTable[1], "and PID =", ParetoFrontTable[2])
 
-      MySOM <- NA
-      DTWTable <- NA
-      RETable <- NA
-      BoundsRE <- NA
-      reviewCoefficients <- NA
+    MySOM <- NA
+    DTWTable <- NA
+    RETable <- NA
+    BoundsRE <- NA
+    reviewCoefficients <- NA
 
   }else{
 
-    #***************************************************************************
+    #*************************************************************************
     message("CLUSTER ANALYSIS with SOMs...")
-    #***************************************************************************
+    #*************************************************************************
 
     dimX <- ceiling(sqrt(dim(ParetoFrontTable)[1]))
     dimY <- ceiling(dim(ParetoFrontTable)[1]/dimX)
@@ -142,9 +165,9 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
                    xdim=dimX, ydim=dimY,
                    init="linear",neigh="gaussian",topol="rect")
 
-    #***************************************************************************
+    #*************************************************************************
     message("REDUNDANCY REDUCTION, SIMILARITY SEARCH with DTW...")
-    #***************************************************************************
+    #*************************************************************************
 
     # Calculate the Ensemble with a non recursive SOM method + DTW
 
@@ -173,13 +196,13 @@ amca <- function(DATA, ModelList, warmup, parameters, ResultsFolder,
 
   }
 
-  #*****************************************************************************
+  #***************************************************************************
   # message("DaMACH algorithm terminated")
-  #*****************************************************************************
+  #***************************************************************************
 
-  #*****************************************************************************
+  #***************************************************************************
   message("Review coefficients:")
-  #*****************************************************************************
+  #***************************************************************************
 
   reviewCoefficients <- review(BoundsIE, BoundsRE, observedQ, type = "P")
 
