@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>R amca by cvitolo</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">R amca</h1>
+        <p class="header">Automatic Model Configuration Algorithm (AMCA)</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/cvitolo/r_amca/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/cvitolo/r_amca/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/cvitolo/r_amca">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/cvitolo">cvitolo</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="amca-r-package" class="anchor" href="#amca-r-package"><span class="octicon octicon-link"></span></a>AMCA (R-package)</h1>
+
+<p>Automatic Model Configuration Algorithm (AMCA)</p>
+
+<p>This is a data mining procedure based on unsupervised machine learning
+techniques to automatically configure hydrological conceptual rainfall-runoff models such as FUSE.</p>
+
+<h4>
+<a name="basics" class="anchor" href="#basics"><span class="octicon octicon-link"></span></a>Basics</h4>
+
+<p>Install and load packages</p>
+
+<div class="highlight highlight-R"><pre><span class="c1"># Install dependent packages from CRAN:</span>
+x <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="s">"qualV"</span><span class="p">,</span> <span class="s">"ggplot2"</span><span class="p">,</span> <span class="s">"emoa"</span><span class="p">,</span> <span class="s">"som"</span><span class="p">,</span> <span class="s">"dtw"</span><span class="p">,</span> <span class="s">"tgp"</span><span class="p">,</span> <span class="s">"devtools"</span><span class="p">,</span>
+       <span class="s">"reshape2"</span><span class="p">,</span> <span class="s">"colorspace"</span><span class="p">,</span> <span class="s">"RColorBrewer"</span><span class="p">)</span>
+install.packages<span class="p">(</span>x<span class="p">)</span>
+<span class="kp">lapply</span><span class="p">(</span>x<span class="p">,</span> <span class="kn">require</span><span class="p">,</span> character.only<span class="o">=</span><span class="bp">T</span><span class="p">);</span> <span class="kp">rm</span><span class="p">(</span>x<span class="p">)</span>
+
+<span class="c1"># Install dpendent package from R-Forge:</span>
+<span class="c1"># install.packages("fuse", repos="http://R-Forge.R-project.org")</span>
+<span class="kn">library</span><span class="p">(</span>fuse<span class="p">)</span>
+
+<span class="c1"># Install dependent gists and packages from github:</span>
+<span class="kn">library</span><span class="p">(</span>devtools<span class="p">)</span>
+install_github<span class="p">(</span><span class="s">"r_pure"</span><span class="p">,</span> username <span class="o">=</span> <span class="s">"cvitolo"</span><span class="p">,</span> subdir <span class="o">=</span> <span class="s">"pure"</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>pure<span class="p">)</span>
+install_github<span class="p">(</span><span class="s">"r_amca"</span><span class="p">,</span> username <span class="o">=</span> <span class="s">"cvitolo"</span><span class="p">,</span> subdir <span class="o">=</span> <span class="s">"amca"</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>amca<span class="p">)</span>
+</pre></div>
+
+<h3>
+<a name="rainfall-runoff-modelling-using-fuse" class="anchor" href="#rainfall-runoff-modelling-using-fuse"><span class="octicon octicon-link"></span></a>Rainfall-Runoff modelling using FUSE</h3>
+
+<p>As an example, we could combine 50 parameter sets and 4 model structures to generate 200 model simulations.</p>
+
+<p>Sample 50 parameter sets for FUSE, using LHS method</p>
+
+<div class="highlight highlight-R"><pre><span class="kn">library</span><span class="p">(</span>fuse<span class="p">)</span>
+data<span class="p">(</span>DATA<span class="p">)</span>
+
+<span class="kp">set.seed</span><span class="p">(</span><span class="m">123</span><span class="p">)</span>
+NumberOfRuns <span class="o">&lt;-</span> <span class="m">10</span>    
+parameters <span class="o">&lt;-</span> GeneratePsetsFUSE<span class="p">(</span>NumberOfRuns<span class="p">)</span>
+</pre></div>
+
+<p>Choose a list of models to take into account</p>
+
+<div class="highlight highlight-R"><pre>selectedModels <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="m">60</span><span class="p">,</span><span class="m">230</span><span class="p">,</span><span class="m">342</span><span class="p">,</span><span class="m">426</span><span class="p">)</span> 
+</pre></div>
+
+<p>Define the list of Model Performance Indices (MPIs)</p>
+
+<div class="highlight highlight-R"><pre><span class="kn">library</span><span class="p">(</span>tiger<span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>qualV<span class="p">)</span>
+LAGTIME <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> lagtime<span class="p">(</span>x<span class="o">$</span>Qo<span class="p">,</span>x<span class="o">$</span>Qs<span class="p">)</span>    
+MAE     <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kp">mean</span><span class="p">(</span>x<span class="o">$</span>Qs <span class="o">-</span> x<span class="o">$</span>Qo<span class="p">,</span> na.rm <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>            
+NSHF    <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="m">1</span> <span class="o">-</span> EF<span class="p">(</span>x<span class="o">$</span>Qo<span class="p">,</span>x<span class="o">$</span>Qs<span class="p">)</span>           
+NSLF    <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="m">1</span> <span class="o">-</span> EF<span class="p">(</span> <span class="kp">log</span><span class="p">(</span>x<span class="o">$</span>Qo<span class="p">)</span> <span class="p">,</span> <span class="kp">log</span><span class="p">(</span>x<span class="o">$</span>Qs<span class="p">)</span> <span class="p">)</span>           
+RR      <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kp">sum</span><span class="p">(</span>x<span class="o">$</span>Qs<span class="p">)</span> <span class="o">/</span><span class="kp">sum</span><span class="p">(</span>x<span class="o">$</span>Po<span class="p">)</span>
+
+MPIs <span class="o">&lt;-</span> <span class="kt">list</span><span class="p">(</span><span class="s">"LAGTIME"</span><span class="o">=</span>LAGTIME<span class="p">,</span><span class="s">"MAE"</span><span class="o">=</span>MAE<span class="p">,</span><span class="s">"NSHF"</span><span class="o">=</span>NSHF<span class="p">,</span><span class="s">"NSLF"</span><span class="o">=</span>NSLF<span class="p">,</span><span class="s">"RR"</span><span class="o">=</span>RR<span class="p">)</span>
+</pre></div>
+
+<p>Run simulations</p>
+
+<div class="highlight highlight-R"><pre><span class="kn">library</span><span class="p">(</span>pure<span class="p">)</span>
+outputFolder <span class="o">&lt;-</span> <span class="s">"~"</span>
+deltim <span class="o">&lt;-</span> <span class="m">1</span><span class="o">/</span><span class="m">24</span> <span class="c1"># or multiplier/60/60/24</span>
+warmup <span class="o">&lt;-</span> <span class="kp">round</span><span class="p">(</span><span class="kp">dim</span><span class="p">(</span>DATA<span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="o">/</span><span class="m">10</span><span class="p">,</span><span class="m">0</span><span class="p">)</span>
+
+<span class="c1"># It is recommended to run simulations on HPC facilities. </span>
+<span class="c1"># However small batches can be run locally using the function MCsimulations()</span>
+MCsimulations<span class="p">(</span>DATA<span class="p">,</span>deltim<span class="p">,</span>warmup<span class="p">,</span>parameters<span class="p">,</span>ModelList<span class="p">,</span>outputFolder<span class="p">,</span>MPIs<span class="p">)</span>
+</pre></div>
+
+<h3>
+<a name="find-the-best-configurations-amongst-those-simulated" class="anchor" href="#find-the-best-configurations-amongst-those-simulated"><span class="octicon octicon-link"></span></a>Find the best configuration(s) amongst those simulated</h3>
+
+<p>Run the AMCA algorithm:</p>
+
+<div class="highlight highlight-R"><pre><span class="kn">library</span><span class="p">(</span>amca<span class="p">)</span>
+results <span class="o">&lt;-</span> amca<span class="p">(</span>DATA<span class="p">,</span> parameters<span class="p">,</span> MPIs<span class="p">,</span> outputFolder<span class="p">,</span> selectedModels<span class="p">,</span> warmup<span class="p">)</span>
+</pre></div>
+
+<p>The best configuration is stored in</p>
+
+<div class="highlight highlight-R"><pre>results<span class="o">$</span>RETable
+
+PlotEnsembles<span class="p">(</span>results<span class="o">$</span>BoundsRE<span class="o">$</span>bounds<span class="p">,</span> results<span class="o">$</span>BoundsRE<span class="o">$</span>discharges<span class="p">,</span>
+              label1<span class="o">=</span><span class="s">"min-max"</span><span class="p">,</span> label2<span class="o">=</span><span class="s">"percentiles"</span><span class="p">)</span>
+</pre></div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-44379190-5");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
