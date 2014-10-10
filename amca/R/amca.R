@@ -70,7 +70,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                                 ResultsFolder,
                                 nParams,
                                 nIndices,
-                                verbose = TRUE)
+                                verbose)
 
   # TRANSFORM arrayP SO THAT ALL INDICES ARE 0-BASED IN THE RANGE [0,1]
   Indices <- RescaleIndices(arrayP, ObsIndices)
@@ -80,7 +80,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                             AllRealisations,
                             ResultsFolder,
                             maxminOnly = TRUE,
-                            verbose = TRUE)
+                            verbose)
 
   #***************************************************************************
   message("PRELIMINARY SELECTION...")

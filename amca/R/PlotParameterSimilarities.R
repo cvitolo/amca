@@ -73,35 +73,51 @@ PlotParameterSimilarities <- function(RealisationsTable,
   # To compare parameter distributions together in a single plot:
   mergeparams <- melt( rbind(oldp,newp), id=c("Type") )
 
+  Type <- NULL
+  value <- NULL
+
   if (!is.null(synparameters)) {
 
     myValue <- as.numeric(synparameters[selectedParams])
     trueValues <- data.frame("variable" = selectedParams,
                              "value" = myValue)
 
+    p <- ggplot( mergeparams, aes(value)) +
+      geom_density(aes(value,fill=Type),alpha = 0.5) +
+      facet_wrap(~variable, scales = "free") +   # labeller = label_parsed
+      geom_point(data = trueValues, y = 0, color="red", size = 3) +
+      xlab("") + ylab("") +
+      scale_fill_manual( values=cbPalette ) +
+      theme_bw() +
+      theme( legend.title = element_blank(),
+             legend.background = element_blank(),
+             legend.position="bottom",
+             axis.text.x = element_text(colour="grey20",size=11),
+             axis.text.y = element_text(colour="grey20",size=13),
+             legend.text = element_text(size=20),
+             strip.text.x = element_text(size = 20),
+             strip.text.y = element_text(size = 20) )
+
   }else{
 
     trueValues <- NULL
 
-  }
+    p <- ggplot( mergeparams, aes(value)) +
+      geom_density(aes(value,fill=Type),alpha = 0.5) +
+      facet_wrap(~variable, scales = "free") +   # labeller = label_parsed
+      xlab("") + ylab("") +
+      scale_fill_manual( values=cbPalette ) +
+      theme_bw() +
+      theme( legend.title = element_blank(),
+             legend.background = element_blank(),
+             legend.position="bottom",
+             axis.text.x = element_text(colour="grey20",size=11),
+             axis.text.y = element_text(colour="grey20",size=13),
+             legend.text = element_text(size=20),
+             strip.text.x = element_text(size = 20),
+             strip.text.y = element_text(size = 20) )
 
-  Type <- NULL
-  value <- NULL
-  p <- ggplot( mergeparams, aes(value)) +
-    geom_density(aes(value,fill=Type),alpha = 0.5) +
-    facet_wrap(~variable, scales = "free") +   # labeller = label_parsed
-    geom_point(data = trueValues, y = 0, color="red", size = 3) +
-    xlab("") + ylab("") +
-    scale_fill_manual( values=cbPalette ) +
-    theme_bw() +
-    theme( legend.title = element_blank(),
-           legend.background = element_blank(),
-           legend.position="bottom",
-           axis.text.x = element_text(colour="grey20",size=11),
-           axis.text.y = element_text(colour="grey20",size=13),
-           legend.text = element_text(size=20),
-           strip.text.x = element_text(size = 20),
-           strip.text.y = element_text(size = 20) )
+  }
 
   print(p)
 
