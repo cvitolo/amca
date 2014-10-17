@@ -28,9 +28,13 @@ BuildEnsemble <- function( DATA,
   p <- sort(as.numeric(as.character(unique(Realisations2Use$pid))))
   m <- sort(as.numeric(as.character(unique(Realisations2Use$mid))))
 
-  message(paste("Total number of rows to bind: ",
-                length(p)*length(m),
-                ". \n Stop here if you do not wish to continue."))
+  if (verbose == TRUE){
+
+    message(paste("Total number of rows to bind: ",
+                  length(p)*length(m),
+                  ". \n Stop here if you do not wish to continue."))
+
+  }
 
   allDischarges <- NA
 

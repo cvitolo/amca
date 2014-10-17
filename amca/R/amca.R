@@ -19,7 +19,8 @@
 #'
 
 amca <- function(DATA, parameters, MPIs, ResultsFolder,
-                 selectedModels=NULL, warmup=0, verbose=FALSE){
+                 selectedModels=NULL, warmup=0, verbose=FALSE,
+                 PreSel=TRUE){
 
   # options(warn=-1) # do not print warnings
 
@@ -82,35 +83,45 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                             maxminOnly = TRUE,
                             verbose)
 
-  #***************************************************************************
-  message("PRELIMINARY SELECTION...")
-  #***************************************************************************
-  # Pre-selection mode
-  selectM <- TRUE
-  selectP <- FALSE
+  if ( PreSel == TRUE ){
 
-  myThreshold <- SetThreshold(ModelList, Indices, verbose, selectM, selectP)
+    #***************************************************************************
+    message("PRELIMINARY SELECTION...")
+    #***************************************************************************
+    # Pre-selection mode
+    selectM <- TRUE
+    selectP <- FALSE
 
-  message(paste("Automatically generated threshold:", myThreshold))
+    myThreshold <- SetThreshold(ModelList, Indices, verbose, selectM, selectP)
 
-  PreSelRealisations <- PreSelection(ModelList, Indices, myThreshold,
-                                     selectM, selectP)
+    message(paste("Automatically generated threshold:", myThreshold))
 
-  PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
-                             parameters, ObsIndices, verbose)
+    PreSelRealisations <- PreSelection(ModelList, Indices, myThreshold,
+                                       selectM, selectP)
 
-  message(paste("Selected models: ",
-                length(unique(PreSelTable$mid)),
-                " - Selected params: ",
-                length(unique(PreSelTable$pid)),sep=""))
+    PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
+                               parameters, ObsIndices, verbose)
 
-  BoundsPreSel <-  BuildEnsemble(DATA,
-                                 warmup,
-                                 PreSelTable,
-                                 ResultsFolder,
-                                 maxminOnly=FALSE,
-                                 lowerP=0.05, upperP=0.95,
-                                 verbose)
+    message(paste("Selected models: ",
+                  length(unique(PreSelTable$mid)),
+                  " - Selected params: ",
+                  length(unique(PreSelTable$pid)),sep=""))
+
+    BoundsPreSel <-  BuildEnsemble(DATA,
+                                   warmup,
+                                   PreSelTable,
+                                   ResultsFolder,
+                                   maxminOnly=FALSE,
+                                   lowerP=0.05, upperP=0.95,
+                                   verbose)
+
+  }else{
+
+    PreSelTable <- ExtendTable(AllRealisations, ModelList,
+                               Indices, parameters, ObsIndices, verbose)
+    BoundsPreSel <- BoundsIE
+
+  }
 
   #***************************************************************************
   message("PARETO FRONTIER...")
