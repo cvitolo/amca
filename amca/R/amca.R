@@ -11,6 +11,7 @@
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Number of initial time steps to ignore (default = 0).
 #' @param verbose if set to TRUE it prints running information (default = FALSE).
+#'  @param PreSel if set to FALSE the preliminary selection step is skipped (default = TRUE).
 #'
 #' @return A list of objects to infer.
 #'
@@ -116,6 +117,8 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                                    verbose)
 
   }else{
+
+    myThreshold <- NULL
 
     PreSelTable <- ExtendTable(AllRealisations, ModelList,
                                Indices, parameters, ObsIndices, verbose)
