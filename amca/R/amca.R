@@ -8,6 +8,7 @@
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
 #' @param MPIs list of functions describing the Model performance Indices.
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
+#' @param deltim time step in days
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Number of initial time steps to ignore (default = 0).
 #' @param verbose if set to TRUE it prints running information (default = FALSE).
@@ -20,7 +21,7 @@
 #' # results <- damach( DATA, parameters, MPIs, ResultsFolder )
 #'
 
-amca <- function(DATA, parameters, MPIs, ResultsFolder,
+amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                  selectedModels=NULL, warmup=0, verbose=FALSE,
                  PreSel=TRUE,allBounds=FALSE){
 

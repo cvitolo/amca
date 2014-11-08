@@ -1,3 +1,14 @@
+#' Compare AMCA runs
+#'
+#' @param listResults list of multiple amca runs
+#' @param experimentName name of the experiment
+#'
+#' @return data.frame with summarized info
+#'
+#' @examples
+#' # CompareModelOptions(listResults, experimentName="A")
+#'
+
 CompareModelOptions <- function(listResults, experimentName="A"){
 
   # listResults <- list(resultsA1,resultsA2,resultsA3) or load("/mnt/homes_uca/cvitolo/x.rda")

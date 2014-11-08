@@ -17,6 +17,8 @@ PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID="",
                                   plotType="frequency",myTitle="",
                                   modellingOptions=NULL){
 
+  Option <- NULL # to avoid Note in check
+
   if (is.null(modellingOptions)) {
     modellingOptions <- c("rferr","arch1","arch2",
                           "qsurf","qperc","esoil","qintf","q_tdh")

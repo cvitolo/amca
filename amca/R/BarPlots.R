@@ -1,10 +1,23 @@
-BarPlots <- function(melted,selectedOption){
+#' Create bar plots
+#'
+#' @param mTable molt table
+#' @param selectedOption a selection of options
+#'
+#' @return bar plot
+#'
+#' @examples
+#' # BarPlots(mTable,selectedOption)
+#'
+
+BarPlots <- function(mTable,selectedOption){
+
+  value <- NULL # to avoid Note in check
 
   breaksOption <- FindBreaksLabels(selectedOption)$breaks
   labelsOption <- FindBreaksLabels(selectedOption)$labels
   titleOption  <- FindBreaksLabels(selectedOption)$title
 
-  m <- melted[which(melted$variable==selectedOption),]
+  m <- mTable[which(mTable$variable==selectedOption),]
 
   m$value <- factor(m$value, levels=FindBreaksLabels(selectedOption)$breaks)
 

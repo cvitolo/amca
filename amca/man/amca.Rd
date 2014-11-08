@@ -3,7 +3,7 @@
 \alias{amca}
 \title{Run the AMCA algorithm.}
 \usage{
-amca(DATA, parameters, MPIs, ResultsFolder, selectedModels = NULL,
+amca(DATA, parameters, MPIs, ResultsFolder, deltim, selectedModels = NULL,
   warmup = 0, verbose = FALSE, PreSel = TRUE, allBounds = FALSE)
 }
 \arguments{
@@ -18,6 +18,8 @@ It is structured into three columns:
 \item{MPIs}{list of functions describing the Model performance Indices.}
 
 \item{ResultsFolder}{Path to the folder containing results from MC simulations.}
+
+\item{deltim}{time step in days}
 
 \item{selectedModels}{(OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).}
 

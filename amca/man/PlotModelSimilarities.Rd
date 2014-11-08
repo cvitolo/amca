@@ -4,7 +4,7 @@
 \title{Plot model similarities (for comparison).}
 \usage{
 PlotModelSimilarities(ModelList, EnsembleTable, synMID = "",
-  plotType = "frequency", myTitle = "", modellingOptions)
+  plotType = "frequency", myTitle = "", modellingOptions = NULL)
 }
 \arguments{
 \item{ModelList}{This is a table which contains at least 1 colum named "mid". Other informations can be added as additional columns but will be ignored.}
@@ -26,6 +26,6 @@ A plot comparing model similarities.
 Plot model similarities (for comparison).
 }
 \examples{
-# PlotModelSimilarities(ModelList,EnsembleTable)
+# PlotModelSimilarities(ModelList,results$RETable)
 }
 

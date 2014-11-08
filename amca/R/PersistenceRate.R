@@ -1,3 +1,15 @@
+#' Calculate persistance rate
+#'
+#' @param REtable summary table of reduced ensemble
+#' @param ModelList this is the list of model structures
+#' @param modellingOptions vector containing the names of modelling options (default is c("rferr","arch1","arch2","qsurf","qperc","esoil","qintf","q_tdh"))
+#'
+#' @return data.frame containing the persistence rate in a new column
+#'
+#' @examples
+#' # PersistenceRate(REtable,ModelList,modellingOptions)
+#'
+
 PersistenceRate <- function(REtable,ModelList,modellingOptions){
 
   counter <- 0
