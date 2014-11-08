@@ -121,8 +121,11 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     PreSelRealisations <- PreSelection(ModelList, Indices, myThreshold,
                                        selectM, selectP)
 
-    PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
+    temp <- ExtendTable(PreSelRealisations, ModelList, Indices,
                                parameters, ObsIndices, verbose)
+
+    PreSelTable <- data.frame(lapply(temp, as.character),
+                              stringsAsFactors=FALSE)
 
     message(paste("Selected models: ",length(unique(PreSelTable$mid)),
                   " - Selected params: ",length(unique(PreSelTable$pid)),
@@ -146,8 +149,12 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
     myThreshold <- NULL
 
-    PreSelTable <- ExtendTable(AllRealisations, ModelList,
+    temp <- ExtendTable(AllRealisations, ModelList,
                                Indices, parameters, ObsIndices, verbose)
+
+    PreSelTable <- data.frame(lapply(temp, as.character),
+                              stringsAsFactors=FALSE)
+
     BoundsPreSel <- BoundsIE
 
   }
@@ -155,7 +162,10 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   #*****************************************************************************
   message("PARETO FRONTIER")
   #*****************************************************************************
-  ParetoFrontTable <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
+  temp <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
+
+  ParetoFrontTable <- data.frame(lapply(temp, as.character),
+                            stringsAsFactors=FALSE)
 
   message(paste("Selected models: ",
                 length(unique(ParetoFrontTable$mid)),
@@ -218,8 +228,11 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
     # Calculate the Filtered Ensemble with a non recursive SOM method + DTW
 
-    RETable <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
-                                       parameters,observedQ,deltim,pperiod)
+    temp <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
+                                parameters,observedQ,deltim,pperiod)
+
+    RETable <- data.frame(lapply(temp, as.character),
+                          stringsAsFactors=FALSE)
 
     message(paste("Selected models: ", length(unique(RETable$mid)),
                   " - Selected params: ", length(unique(RETable$pid)),sep=""))
