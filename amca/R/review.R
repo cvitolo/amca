@@ -13,9 +13,6 @@
 
 review <- function(IE, RE, observedQ, type = "B"){
 
-  #*****************************************************************************
-  message("CALCULATING ACCURACY, PRECISION AND RELIABILITY...")
-  #*****************************************************************************
   Q1 <- IE$bounds[,"Qobs"]
 
   if (!is.na(IE$bounds[1,"UP"])){

@@ -71,7 +71,9 @@ MCsimulations(DATA,deltim,warmup,parameters,selectedModels,outputFolder,MPIs)
 Run the AMCA algorithm:
 ```R
 library(amca)
-results <- amca(DATA, parameters, MPIs, outputFolder, selectedModels, warmup)
+results <- amca(DATA, parameters, MPIs, ResultsFolder, deltim,
+                selectedModels=ModelList$mid, warmup, verbose=FALSE,
+                PreSel=TRUE,allBounds=FALSE)
 ```
 
 The best configuration is stored in

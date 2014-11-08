@@ -38,6 +38,6 @@ A list of objects to infer.
 Run the AMCA algorithm.
 }
 \examples{
-# results <- damach( DATA, parameters, MPIs, ResultsFolder )
+# results <- damach( DATA, parameters, MPIs, ResultsFolder, deltim )
 }
 

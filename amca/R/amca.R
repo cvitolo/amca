@@ -25,6 +25,11 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                  selectedModels=NULL, warmup=0, verbose=FALSE,
                  PreSel=TRUE,allBounds=FALSE){
 
+  #*****************************************************************************
+  message("###################################################################")
+  message("")
+  #*****************************************************************************
+
   options(warn=-1) # do not print warnings
 
   # load list of availabe models
@@ -51,7 +56,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   observedQ <- coredata(DATA[pperiod,"Q"])
 
   #*****************************************************************************
-  # message("CALCULATING TRUE VALUES FOR INDICES...")
+  message("CALCULATING TRUE VALUES FOR INDICES")
   #*****************************************************************************
   x <- data.frame( Po = coredata(DATA[pperiod,"P"]),
                    Qo = observedQ,
@@ -66,8 +71,17 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   AllRealisations <- data.frame(table("mid"=rep(ModelList[,"mid"], nParams),
                                       "pid"=rep(seq(1:nParams), nModels) ) )
 
+  message(paste("True Indices: LAGTIME = ",ObsIndices[[1]],
+                ", MAE = ", ObsIndices[[2]],
+                ", NSHF = ", ObsIndices[[3]],
+                ", NSLF = ", ObsIndices[[4]],
+                ", RR = ", round(ObsIndices[[5]],2),
+                sep=""))
+
+  message("")
+
   #*****************************************************************************
-  message("GENERATING THE INITIAL ENSEMBLE FROM THE RESULT SPACE...")
+  message("GENERATING THE INITIAL ENSEMBLE FROM THE RESULT SPACE")
   #*****************************************************************************
 
   arrayP <- Simulations2Indices(ModelList,
@@ -86,10 +100,15 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                             maxminOnly = TRUE,
                             verbose)
 
+  message(paste("IE's dimensions =", dim(Indices)[1], "x",
+                dim(Indices)[2], "x",
+                dim(Indices)[3]))
+  message("")
+
   if ( PreSel == TRUE ){
 
     #***************************************************************************
-    message("PRELIMINARY SELECTION...")
+    message("PRELIMINARY SELECTION")
     #***************************************************************************
     # Pre-selection mode
     selectM <- TRUE
@@ -105,10 +124,11 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     PreSelTable <- ExtendTable(PreSelRealisations, ModelList, Indices,
                                parameters, ObsIndices, verbose)
 
-    message(paste("Selected models: ",
-                  length(unique(PreSelTable$mid)),
-                  " - Selected params: ",
-                  length(unique(PreSelTable$pid)),sep=""))
+    message(paste("Selected models: ",length(unique(PreSelTable$mid)),
+                  " - Selected params: ",length(unique(PreSelTable$pid)),
+                  sep=""))
+
+    message("")
 
     if (allBounds == TRUE) {
       BoundsPreSel <-  BuildEnsemble(DATA,
@@ -133,7 +153,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   }
 
   #*****************************************************************************
-  message("PARETO FRONTIER...")
+  message("PARETO FRONTIER")
   #*****************************************************************************
   ParetoFrontTable <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
 
@@ -154,6 +174,8 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     BoundsPF <- NULL
   }
 
+  message("")
+
   if (dim(ParetoFrontTable)[1]==1){
 
     message("The Pareto Front is made of 1 realization: MID =",
@@ -167,7 +189,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   }else{
 
     #***************************************************************************
-    message("CLUSTER ANALYSIS with SOMs...")
+    message("CLUSTER ANALYSIS with SOMs")
     #***************************************************************************
 
     dimX <- ceiling(sqrt(dim(ParetoFrontTable)[1]))
@@ -188,8 +210,10 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                    xdim=dimX, ydim=dimY,
                    init="linear",neigh="gaussian",topol="rect")
 
+    message("")
+
     #***************************************************************************
-    message("REDUNDANCY REDUCTION, SIMILARITY SEARCH with DTW...")
+    message("REDUNDANCY REDUCTION, SIMILARITY SEARCH with DTW")
     #***************************************************************************
 
     # Calculate the Filtered Ensemble with a non recursive SOM method + DTW
@@ -197,10 +221,8 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     RETable <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
                                        parameters,observedQ,deltim,pperiod)
 
-    message(paste("Selected models: ",
-                  length(unique(RETable$mid)),
-                  " - Selected params: ",
-                  length(unique(RETable$pid)),sep=""))
+    message(paste("Selected models: ", length(unique(RETable$mid)),
+                  " - Selected params: ", length(unique(RETable$pid)),sep=""))
 
     BoundsRE <- BuildEnsemble(DATA,
                               warmup,
@@ -212,11 +234,18 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
   }
 
+  message("")
+
   #*****************************************************************************
-  message("Review coefficients:")
+  message("REVIEW COEFFICIENTS")
   #*****************************************************************************
 
   reviewCoefficients <- review(BoundsIE, BoundsRE, observedQ, type = "P")
+
+  #*****************************************************************************
+  message("")
+  message("###################################################################")
+  #*****************************************************************************
 
   return(list("arrayP"=arrayP,
               "Indices"=Indices,
