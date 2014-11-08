@@ -18,7 +18,7 @@
 #' @return A list of objects to infer.
 #'
 #' @examples
-#' # results <- damach( DATA, parameters, MPIs, ResultsFolder )
+#' # results <- damach( DATA, parameters, MPIs, ResultsFolder, deltim )
 #'
 
 amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
@@ -50,9 +50,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
   observedQ <- coredata(DATA[pperiod,"Q"])
 
-  #***************************************************************************
+  #*****************************************************************************
   # message("CALCULATING TRUE VALUES FOR INDICES...")
-  #***************************************************************************
+  #*****************************************************************************
   x <- data.frame( Po = coredata(DATA[pperiod,"P"]),
                    Qo = observedQ,
                    Qs = observedQ )
@@ -66,9 +66,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   AllRealisations <- data.frame(table("mid"=rep(ModelList[,"mid"], nParams),
                                       "pid"=rep(seq(1:nParams), nModels) ) )
 
-  #***************************************************************************
+  #*****************************************************************************
   message("GENERATING THE INITIAL ENSEMBLE FROM THE RESULT SPACE...")
-  #***************************************************************************
+  #*****************************************************************************
 
   arrayP <- Simulations2Indices(ModelList,
                                 ResultsFolder,
@@ -132,9 +132,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
   }
 
-  #***************************************************************************
+  #*****************************************************************************
   message("PARETO FRONTIER...")
-  #***************************************************************************
+  #*****************************************************************************
   ParetoFrontTable <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
 
   message(paste("Selected models: ",
@@ -166,9 +166,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
   }else{
 
-    #*************************************************************************
+    #***************************************************************************
     message("CLUSTER ANALYSIS with SOMs...")
-    #*************************************************************************
+    #***************************************************************************
 
     dimX <- ceiling(sqrt(dim(ParetoFrontTable)[1]))
     dimY <- ceiling(dim(ParetoFrontTable)[1]/dimX)
@@ -188,9 +188,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                    xdim=dimX, ydim=dimY,
                    init="linear",neigh="gaussian",topol="rect")
 
-    #*************************************************************************
+    #***************************************************************************
     message("REDUNDANCY REDUCTION, SIMILARITY SEARCH with DTW...")
-    #*************************************************************************
+    #***************************************************************************
 
     # Calculate the Filtered Ensemble with a non recursive SOM method + DTW
 
@@ -212,13 +212,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
 
   }
 
-  #***************************************************************************
-  # message("DaMACH algorithm terminated")
-  #***************************************************************************
-
-  #***************************************************************************
+  #*****************************************************************************
   message("Review coefficients:")
-  #***************************************************************************
+  #*****************************************************************************
 
   reviewCoefficients <- review(BoundsIE, BoundsRE, observedQ, type = "P")
 
