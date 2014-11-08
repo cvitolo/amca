@@ -1,9 +1,4 @@
-RelativeFrequency <- function(REtable,modellingOptions=NULL){
-
-  if (is.null(modellingOptions)) {
-    modellingOptions <- c("rferr","arch1","arch2",
-                          "qsurf","qperc","esoil","qintf","q_tdh")
-  }
+RelativeFrequency <- function(REtable,modellingOptions){
 
   ModelList <- PrepareTable()
 

@@ -1,9 +1,4 @@
-PersistenceRate <- function(REtable,ModelList,modellingOptions=NULL){
-
-  if (is.null(modellingOptions)) {
-    modellingOptions <- c("rferr","arch1","arch2",
-                          "qsurf","qperc","esoil","qintf","q_tdh")
-  }
+PersistenceRate <- function(REtable,ModelList,modellingOptions){
 
   counter <- 0
   Pr <- c()

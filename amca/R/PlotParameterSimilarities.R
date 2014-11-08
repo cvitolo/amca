@@ -45,7 +45,7 @@ PlotParameterSimilarities <- function(RealisationsTable,
     print(paste("PARAMETER: ",names(ParamTable)[col],sep=""))
     Pdistr <- as.numeric(as.character(ParamTable[!is.na(ParamTable[,col]),col]))
     if ( length(Pdistr)<6 ) {
-      print("Too many -999! This parameter distribution will be discarded.")
+      print("Too many NA! This parameter distribution will be discarded.")
       NewParamTable <- NewParamTable[,1:dim(NewParamTable)[2]]
     }else{
       print(chisq.test(Pdistr))
@@ -56,8 +56,8 @@ PlotParameterSimilarities <- function(RealisationsTable,
     }
   }
 
-  for (col in 1:dim(NewParamTable)[2]){
-    if (all(is.na(NewParamTable[,col]))) NewParamTable <- NewParamTable[,-col]
+  for (newCol in 1:dim(NewParamTable)[2]){
+    if (all(is.na(NewParamTable[,newCol]))) NewParamTable <- NewParamTable[,-newCol]
   }
 
   #NewParamTable <- NewParamTable[,which(!is.na(NewParamTable[1,]))]
@@ -99,8 +99,6 @@ PlotParameterSimilarities <- function(RealisationsTable,
              strip.text.y = element_text(size = 20) )
 
   }else{
-
-    trueValues <- NULL
 
     p <- ggplot( mergeparams, aes(value)) +
       geom_density(aes(value,fill=Type),alpha = 0.5) +

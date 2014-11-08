@@ -13,7 +13,7 @@ PlotData(DATA)
             "Q" containing streamflow discharge.}
 }
 \value{
-A plot divided into 3 panels: P, E andQ
+A plot divided into 3 panels: P, E and Q
 }
 \description{
 Plot input data

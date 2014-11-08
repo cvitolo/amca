@@ -10,12 +10,17 @@
 #' @return A plot comparing model similarities.
 #'
 #' @examples
-#' # PlotModelSimilarities(ModelList,EnsembleTable)
+#' # PlotModelSimilarities(ModelList,results$RETable)
 #'
 
 PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID="",
                                   plotType="frequency",myTitle="",
-                                  modellingOptions){
+                                  modellingOptions=NULL){
+
+  if (is.null(modellingOptions)) {
+    modellingOptions <- c("rferr","arch1","arch2",
+                          "qsurf","qperc","esoil","qintf","q_tdh")
+  }
 
   if (plotType=="frequency"){
 
