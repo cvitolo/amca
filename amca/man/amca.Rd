@@ -4,7 +4,7 @@
 \title{Run the AMCA algorithm.}
 \usage{
 amca(DATA, parameters, MPIs, ResultsFolder, selectedModels = NULL,
-  warmup = 0, verbose = FALSE)
+  warmup = 0, verbose = FALSE, PreSel = TRUE, allBounds = FALSE)
 }
 \arguments{
 \item{DATA}{This is a data.frame containing the observed time series (zoo objects).
@@ -24,6 +24,10 @@ It is structured into three columns:
 \item{warmup}{Number of initial time steps to ignore (default = 0).}
 
 \item{verbose}{if set to TRUE it prints running information (default = FALSE).}
+
+\item{PreSel}{if set to FALSE the preliminary selection step is skipped (default = TRUE).}
+
+\item{allBounds}{if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE).}
 }
 \value{
 A list of objects to infer.

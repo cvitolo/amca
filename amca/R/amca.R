@@ -11,7 +11,8 @@
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Number of initial time steps to ignore (default = 0).
 #' @param verbose if set to TRUE it prints running information (default = FALSE).
-#'  @param PreSel if set to FALSE the preliminary selection step is skipped (default = TRUE).
+#' @param PreSel if set to FALSE the preliminary selection step is skipped (default = TRUE).
+#' @param allBounds if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE).
 #'
 #' @return A list of objects to infer.
 #'
@@ -21,9 +22,9 @@
 
 amca <- function(DATA, parameters, MPIs, ResultsFolder,
                  selectedModels=NULL, warmup=0, verbose=FALSE,
-                 PreSel=TRUE){
+                 PreSel=TRUE,allBounds=FALSE){
 
-  # options(warn=-1) # do not print warnings
+  options(warn=-1) # do not print warnings
 
   # load list of availabe models
   load(system.file("data/modlist.rda", package = "fuse"))
@@ -108,13 +109,17 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                   " - Selected params: ",
                   length(unique(PreSelTable$pid)),sep=""))
 
-    BoundsPreSel <-  BuildEnsemble(DATA,
-                                   warmup,
-                                   PreSelTable,
-                                   ResultsFolder,
-                                   maxminOnly=FALSE,
-                                   lowerP=0.05, upperP=0.95,
-                                   verbose)
+    if (allBounds == TRUE) {
+      BoundsPreSel <-  BuildEnsemble(DATA,
+                                     warmup,
+                                     PreSelTable,
+                                     ResultsFolder,
+                                     maxminOnly=FALSE,
+                                     lowerP=0.05, upperP=0.95,
+                                     verbose)
+    }else{
+      BoundsPreSel <- NULL
+    }
 
   }else{
 
@@ -136,13 +141,17 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                 " - Selected params: ",
                 length(unique(ParetoFrontTable$pid)),sep=""))
 
-  BoundsPF <- BuildEnsemble(DATA,
-                            warmup,
-                            ParetoFrontTable,
-                            ResultsFolder,
-                            maxminOnly=FALSE,
-                            lowerP=0.05, upperP=0.95,
-                            verbose)
+  if (allBounds == TRUE) {
+    BoundsPF <- BuildEnsemble(DATA,
+                              warmup,
+                              ParetoFrontTable,
+                              ResultsFolder,
+                              maxminOnly=FALSE,
+                              lowerP=0.05, upperP=0.95,
+                              verbose)
+  }else{
+    BoundsPF <- NULL
+  }
 
   if (dim(ParetoFrontTable)[1]==1){
 
@@ -150,7 +159,6 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
             ParetoFrontTable[1], "and PID =", ParetoFrontTable[2])
 
     MySOM <- NA
-    DTWTable <- NA
     RETable <- NA
     BoundsRE <- NA
     reviewCoefficients <- NA
@@ -183,17 +191,10 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
     message("REDUNDANCY REDUCTION, SIMILARITY SEARCH with DTW...")
     #*************************************************************************
 
-    # Calculate the Ensemble with a non recursive SOM method + DTW
+    # Calculate the Filtered Ensemble with a non recursive SOM method + DTW
 
-    DTWTable <- ParetoFrontierDTW(ParetoFrontTable,
-                                  DATA,
-                                  the.som,
-                                  ResultsFolder,
-                                  warmup)
-
-    #calculate Filtered Ensemble
-
-    RETable <- RedundancyReductionDTW(DTWTable)
+    RETable <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
+                                       parameters,observedQ,deltim,pperiod)
 
     message(paste("Selected models: ",
                   length(unique(RETable$mid)),
@@ -230,7 +231,6 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
               "ParetoFrontTable"=ParetoFrontTable,
               "BoundsPF"=BoundsPF,
               "MySOM"=the.som,
-              "DTWTable"=DTWTable,
               "RETable"=RETable,
               "BoundsRE"=BoundsRE,
               "reviewCoefficients"=reviewCoefficients) )

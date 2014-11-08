@@ -73,7 +73,6 @@ review <- function(IE, RE, observedQ, type = "B"){
 
   message(paste("Statistical reliability = ",round(reliabilityRE*100,0),"%"))
 
-
   return(as.list(c("accuracyIE"=accuracyIE,
                    "accuracyRE"=accuracyRE,
                    "precisionRE"=precisionRE,

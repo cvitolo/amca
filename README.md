@@ -11,20 +11,17 @@ Install and load packages
 ```R
 # Install dependent packages from CRAN:
 x <- c("qualV", "ggplot2", "emoa", "som", "dtw", "tgp", "devtools",
-       "reshape2", "colorspace", "RColorBrewer")
+       "reshape2", "colorspace", "RColorBrewer","zoo","tiger")
 install.packages(x)
 lapply(x, require, character.only=T); rm(x)
 
 # Install dpendent package from R-Forge:
 # install.packages("fuse", repos="http://R-Forge.R-project.org")
-library(fuse)
 
 # Install dependent gists and packages from github:
 library(devtools)
-install_github("r_pure", username = "cvitolo", subdir = "pure")
-library(pure)
-install_github("r_amca", username = "cvitolo", subdir = "amca")
-library(amca)
+install_github("cvitolo/r_pure", subdir = "pure")
+install_github("cvitolo/r_amca", subdir = "amca")
 ```
 
 ### Rainfall-Runoff modelling using FUSE
@@ -35,8 +32,12 @@ Sample 50 parameter sets for FUSE, using LHS method
 library(fuse)
 data(DATA)
 
-set.seed(123)
-NumberOfRuns <- 10    
+outputFolder <- "~"
+deltim <- 1/24 
+warmup <- round(dim(DATA)[1]/10,0)
+
+NumberOfRuns <- 10
+set.seed(123)    
 parameters <- GeneratePsetsFUSE(NumberOfRuns)
 ```
 
@@ -60,14 +61,10 @@ MPIs <- list("LAGTIME"=LAGTIME,"MAE"=MAE,"NSHF"=NSHF,"NSLF"=NSLF,"RR"=RR)
 
 Run simulations
 ```R
-library(pure)
-outputFolder <- "~"
-deltim <- 1/24 # or multiplier/60/60/24
-warmup <- round(dim(DATA)[1]/10,0)
-
 # It is recommended to run simulations on HPC facilities. 
 # However small batches can be run locally using the function MCsimulations()
-MCsimulations(DATA,deltim,warmup,parameters,ModelList,outputFolder,MPIs)
+library(pure)
+MCsimulations(DATA,deltim,warmup,parameters,selectedModels,outputFolder,MPIs)
 ```
 
 ### Find the best configuration(s) amongst those simulated
