@@ -41,7 +41,7 @@ PlotEnsembles <- function(bounds, dischargeTable,lowerP=5,upperP=95,
 
   plot(NULL, xlim = c(-15, dim(dischargeTable)[2]+15),
        ylim =c(boundsMin,boundsMax),
-       main="", xlab="",ylab="Discharge [mm/h]",xaxt="n")
+       main="", xlab="",ylab="Discharge [mm/d]",xaxt="n")
 
   fan(data = dischargeTable, fan.col = sequential_hcl, ln=0, alpha=0.5)
   fan(dischargeTable, ln=c(lowerP, upperP), llab=TRUE, alpha=0, ln.col="red")

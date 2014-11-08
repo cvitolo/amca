@@ -4,7 +4,7 @@
 \title{Plot model similarities (for comparison).}
 \usage{
 PlotModelSimilarities(ModelList, EnsembleTable, synMID = "",
-  plotType = "frequency", myTitle = "")
+  plotType = "frequency", myTitle = "", modellingOptions)
 }
 \arguments{
 \item{ModelList}{This is a table which contains at least 1 colum named "mid". Other informations can be added as additional columns but will be ignored.}
@@ -13,9 +13,11 @@ PlotModelSimilarities(ModelList, EnsembleTable, synMID = "",
 
 \item{synMID}{if running synthetic experiments, this is the synthetic MID number (otherwise leave it empty)}
 
-\item{plotType}{default is "frequency", TODO: "persistency"}
+\item{plotType}{default is "frequency" (alternative: "persistence")}
 
 \item{myTitle}{title of the plot}
+
+\item{modellingOptions}{is a vector of labels to specify which modelling options should be used. If set to NULL, it uses all the modelling options.}
 }
 \value{
 A plot comparing model similarities.

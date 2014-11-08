@@ -6,7 +6,7 @@
 #'             "E" containing evapo-transpiration and
 #'             "Q" containing streamflow discharge.
 #'
-#' @return A plot divided into 3 panels: P, E andQ
+#' @return A plot divided into 3 panels: P, E and Q
 #'
 #' @examples
 #' # PlotData(DATA)
