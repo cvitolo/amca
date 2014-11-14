@@ -15,7 +15,7 @@ x <- c("qualV", "ggplot2", "emoa", "som", "dtw", "tgp", "devtools",
 install.packages(x)
 lapply(x, require, character.only=T); rm(x)
 
-# Install dpendent package from R-Forge:
+# Install dependent package from R-Forge:
 # install.packages("fuse", repos="http://R-Forge.R-project.org")
 
 # Install dependent gists and packages from github:

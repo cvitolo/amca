@@ -17,6 +17,6 @@ prints on the screen two lists: 1) MID of existing files, 2) MID of missing file
 This function scans the result folder for missing files.
 }
 \examples{
-# ScanResultFiles("/home/claudia/HPC/Severn_wrr2014a/LHS_OptionB2_timedelay1p4to3p6",damachModelList)
+# ScanResultFiles("/test",damachModelList)
 }
 

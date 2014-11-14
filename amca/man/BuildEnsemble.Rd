@@ -4,7 +4,7 @@
 \title{Extracts the ensemble bounds from a given a set of realisations.}
 \usage{
 BuildEnsemble(DATA, warmup, Realisations2Use, SimulationFolder,
-  maxminOnly = FALSE, lowerP = 0.05, upperP = 0.95, verbose = FALSE)
+  maxminOnly = TRUE, lowerP = 0.05, upperP = 0.95, verbose = FALSE)
 }
 \arguments{
 \item{DATA}{this is the data frame containing the observations}

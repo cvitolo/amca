@@ -21,7 +21,7 @@ BuildEnsemble <- function( DATA,
                            warmup,
                            Realisations2Use,
                            SimulationFolder,
-                           maxminOnly=FALSE,
+                           maxminOnly=TRUE,
                            lowerP=0.05, upperP=0.95,
                            verbose=FALSE) {
 
@@ -53,9 +53,16 @@ BuildEnsemble <- function( DATA,
       }
 
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
-      discharges <- discharges
-      minD <- apply(rbind(minD,discharges),2,min, na.rm=TRUE)
-      maxD <- apply(rbind(maxD,discharges),2,max, na.rm=TRUE)
+      if (exists("discharges")){
+        discharges <- discharges # to avoid NOTE from check
+        minD <- apply(rbind(minD,discharges),2,min, na.rm=TRUE)
+        maxD <- apply(rbind(maxD,discharges),2,max, na.rm=TRUE)
+      }else{
+        minQ <- minQ; maxQ <- maxQ # to avoid NOTE from check
+        minD <- minQ
+        maxD <- maxQ
+      }
+
 
     }
 
