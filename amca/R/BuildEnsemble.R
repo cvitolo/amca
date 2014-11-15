@@ -28,14 +28,6 @@ BuildEnsemble <- function( DATA,
   p <- sort(as.numeric(as.character(unique(Realisations2Use$pid))))
   m <- sort(as.numeric(as.character(unique(Realisations2Use$mid))))
 
-  if (verbose == TRUE){
-
-    message(paste("Total number of rows to bind: ",
-                  length(p)*length(m),
-                  ". \n Stop here if you do not wish to continue."))
-
-  }
-
   allDischarges <- NA
 
   if (maxminOnly == TRUE) {
@@ -47,22 +39,31 @@ BuildEnsemble <- function( DATA,
     for (mid in m){
 
       if (verbose==TRUE) {
+
         mcounter <- mcounter + 1
+
         print(paste("FUN: BuildEnsemble - Opening MID ",
                     mid,". ",mcounter, " out of ",length(m), sep=""))
+
       }
 
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
+
       if (exists("discharges")){
+
         discharges <- discharges # to avoid NOTE from check
+
         minD <- apply(rbind(minD,discharges),2,min, na.rm=TRUE)
         maxD <- apply(rbind(maxD,discharges),2,max, na.rm=TRUE)
-      }else{
-        minQ <- minQ; maxQ <- maxQ # to avoid NOTE from check
-        minD <- minQ
-        maxD <- maxQ
-      }
 
+      }else{
+
+        minQ <- minQ; maxQ <- maxQ # to avoid NOTE from check
+
+        minD <- minQ[dim(DATA)[1]-warmup]
+        maxD <- maxQ[dim(DATA)[1]-warmup]
+
+      }
 
     }
 

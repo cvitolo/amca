@@ -1,11 +1,12 @@
 #' Automatically set a performance threshold.
 #'
 #' @param ModelList a table that contains at list 1 colum named "mid" (list of model structures)
-#' @param Indices this is the array containing the rescaled Model Performance Indices.
-#' @param verbose if set to TRUE it prints running information and a plot showing the threshold.
+#' @param Indices this is the array containing the rescaled Model Performance
 #' @param selectM boolean value. If it is TRUE the preselection applies to model structures
 #' @param selectP boolean value. If it is TRUE the preselection applies to parameter sets
 #' @param type it can either be "dependent" or "independent"
+#' Indices.
+#' @param verbose if set to TRUE it prints running information and a plot showing the threshold.
 #'
 #' @return A number between 0 and 1
 #'
@@ -13,8 +14,8 @@
 #' # SetThreshold(ModelList, Indices)
 #'
 
-SetThreshold <- function(ModelList, Indices, verbose,
-                         selectM=TRUE,selectP=TRUE,type="independent"){
+SetThreshold <- function(ModelList, Indices, selectM=TRUE,selectP=TRUE,
+                         type="independent", verbose){
 
   MIDs <- c()
   PIDs <- c()

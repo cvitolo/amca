@@ -70,11 +70,14 @@ PreSelection <- function(ModelList,Indices,threshold,
 
   }
 
-  selectedRealisations <- data.frame(table("mid"=rep(SelectedMIDs,
-                                                     length(SelectedPIDs)),
-                                           "pid"=rep(SelectedPIDs,
-                                                     length(SelectedMIDs)) ) )
+  temp <- data.frame(table("mid"=rep(SelectedMIDs,
+                                     length(SelectedPIDs)),
+                           "pid"=rep(SelectedPIDs,
+                                     length(SelectedMIDs))))
 
-  return(selectedRealisations[,1:2])
+  selectedRealisations <- data.frame(lapply(temp[,1:2], as.character),
+                            stringsAsFactors=FALSE)
+
+  return(selectedRealisations)
 
 }

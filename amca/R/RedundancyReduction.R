@@ -23,13 +23,17 @@ RedundancyReduction <- function(ParetoFront,DATA,the.som,
   DTWtable$ClusterY <- the.som$visual[,2]
   DTWtable$dtw_score <- NA
 
+  discharges <- matrix(NA,ncol=length(pperiod),nrow=dim(DTWtable)[1])
+
   for ( i in 1:dim(DTWtable)[1] ){
+
     mid <- as.numeric(as.character(DTWtable[i,"mid"]))
     pid <- as.numeric(as.character(DTWtable[i,"pid"]))
 
-    simulatedQ <- as.numeric(as.character(RunFUSE(DATA, ParameterSet[pid,],
+    discharges[i,] <- as.numeric(as.character(RunFUSE(DATA, ParameterSet[pid,],
                                                   deltim, mid)[pperiod]))
-    DTWtable$dtw_score[i] <- dtw(observedQ, simulatedQ)$distance
+    DTWtable$dtw_score[i] <- dtw(observedQ, discharges[i,])$distance
+
   }
 
   uniqueClusters <- unique(DTWtable[,c("ClusterX","ClusterY")])
@@ -50,7 +54,8 @@ RedundancyReduction <- function(ParetoFront,DATA,the.som,
 
   }
 
-  reducedEnsemble <- DTWtable[sort(allRows),]
+  reducedEnsemble <- list("table" = DTWtable[sort(allRows),],
+                          "discharges" = discharges)
 
   return(reducedEnsemble)
 

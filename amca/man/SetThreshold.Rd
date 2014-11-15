@@ -3,21 +3,22 @@
 \alias{SetThreshold}
 \title{Automatically set a performance threshold.}
 \usage{
-SetThreshold(ModelList, Indices, verbose, selectM = TRUE, selectP = TRUE,
-  type = "independent")
+SetThreshold(ModelList, Indices, selectM = TRUE, selectP = TRUE,
+  type = "independent", verbose)
 }
 \arguments{
 \item{ModelList}{a table that contains at list 1 colum named "mid" (list of model structures)}
 
-\item{Indices}{this is the array containing the rescaled Model Performance Indices.}
-
-\item{verbose}{if set to TRUE it prints running information and a plot showing the threshold.}
+\item{Indices}{this is the array containing the rescaled Model Performance}
 
 \item{selectM}{boolean value. If it is TRUE the preselection applies to model structures}
 
 \item{selectP}{boolean value. If it is TRUE the preselection applies to parameter sets}
 
-\item{type}{it can either be "dependent" or "independent"}
+\item{type}{it can either be "dependent" or "independent"
+Indices.}
+
+\item{verbose}{if set to TRUE it prints running information and a plot showing the threshold.}
 }
 \value{
 A number between 0 and 1

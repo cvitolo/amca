@@ -114,7 +114,8 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     selectM <- TRUE
     selectP <- FALSE
 
-    myThreshold <- SetThreshold(ModelList, Indices, verbose, selectM, selectP)
+    myThreshold <- SetThreshold(ModelList, Indices, selectM, selectP,
+                                type="independent", verbose)
 
     message(paste("Automatically generated threshold:", myThreshold))
 
@@ -122,10 +123,9 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
                                        selectM, selectP)
 
     temp <- ExtendTable(PreSelRealisations, ModelList, Indices,
-                               parameters, ObsIndices, verbose)
+                        parameters, ObsIndices, verbose)
 
-    PreSelTable <- data.frame(lapply(temp, as.character),
-                              stringsAsFactors=FALSE)
+    PreSelTable <- data.frame(lapply(temp, as.character),stringsAsFactors=FALSE)
 
     message(paste("Selected models: ",length(unique(PreSelTable$mid)),
                   " - Selected params: ",length(unique(PreSelTable$pid)),
@@ -150,7 +150,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     myThreshold <- NULL
 
     temp <- ExtendTable(AllRealisations, ModelList,
-                               Indices, parameters, ObsIndices, verbose)
+                        Indices, parameters, ObsIndices, verbose)
 
     PreSelTable <- data.frame(lapply(temp, as.character),
                               stringsAsFactors=FALSE)
@@ -165,7 +165,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   temp <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
 
   ParetoFrontTable <- data.frame(lapply(temp, as.character),
-                            stringsAsFactors=FALSE)
+                                 stringsAsFactors=FALSE)
 
   message(paste("Selected models: ",
                 length(unique(ParetoFrontTable$mid)),
@@ -231,20 +231,20 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     temp <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
                                 parameters,observedQ,deltim,pperiod)
 
-    RETable <- data.frame(lapply(temp, as.character),
+    RETable <- data.frame(lapply(temp$table, as.character),
                           stringsAsFactors=FALSE)
+
+    bounds <- data.frame("Dates"=index(DATA$P)[pperiod],
+                           "Qobs"=DATA$Q[pperiod],
+                           "LB"=apply(temp$discharges, 2, min),
+                           "UB"=apply(temp$discharges, 2, max),
+                           "LP"=apply(temp$discharges, 2, quantile, probs = 0.05),
+                           "UP"=apply(temp$discharges, 2, quantile, probs = 0.95))
+
+    BoundsRE <- list("discharges" = temp$discharges, "bounds" = bounds)
 
     message(paste("Selected models: ", length(unique(RETable$mid)),
                   " - Selected params: ", length(unique(RETable$pid)),sep=""))
-
-    BoundsRE <- BuildEnsemble(DATA,
-                              warmup,
-                              RETable,
-                              ResultsFolder,
-                              maxminOnly=FALSE,
-                              lowerP=0.05, upperP=0.95,
-                              verbose)
-
   }
 
   message("")
@@ -260,18 +260,18 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   message("###################################################################")
   #*****************************************************************************
 
-  return(list("arrayP"=arrayP,
-              "Indices"=Indices,
-              "AllRealisations"=AllRealisations,
-              "BoundsIE"=BoundsIE,
-              "threshold"=myThreshold,
-              "PreSelTable" = PreSelTable,
-              "BoundsPreSel"=BoundsPreSel,
-              "ParetoFrontTable"=ParetoFrontTable,
-              "BoundsPF"=BoundsPF,
-              "MySOM"=the.som,
-              "RETable"=RETable,
-              "BoundsRE"=BoundsRE,
-              "reviewCoefficients"=reviewCoefficients) )
+  return(list("arrayP"             = arrayP,
+              "Indices"            = Indices,
+              "AllRealisations"    = AllRealisations,
+              "BoundsIE"           = BoundsIE,
+              "threshold"          = myThreshold,
+              "PreSelTable"        = PreSelTable,
+              "BoundsPreSel"       = BoundsPreSel,
+              "ParetoFrontTable"   = ParetoFrontTable,
+              "BoundsPF"           = BoundsPF,
+              "MySOM"              = the.som,
+              "RETable"            = RETable,
+              "BoundsRE"           = BoundsRE,
+              "reviewCoefficients" = reviewCoefficients) )
 
 }
