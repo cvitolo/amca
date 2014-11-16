@@ -7,6 +7,7 @@
 #' @param observedQ observed discharge (warmup removed)
 #' @param deltim time step in days
 #' @param pperiod is the vector of time step to take into consideration when calculating performances
+#' @param verbose if set to TRUE it prints running information (default = FALSE)
 #'
 #' @return A subset of the table containing the filtered configurations.
 #'
@@ -16,7 +17,7 @@
 #' # RedundancyReduction(ParetoFrontTable,DATA,the.som,parameters,observedQ,deltim,pperiod)
 #'
 RedundancyReduction <- function(ParetoFront,DATA,the.som,
-                                ParameterSet,observedQ,deltim,pperiod){
+                                ParameterSet,observedQ,deltim,pperiod,verbose=FALSE){
 
   DTWtable <- ParetoFront
   DTWtable$ClusterX <- the.som$visual[,1]
@@ -30,9 +31,17 @@ RedundancyReduction <- function(ParetoFront,DATA,the.som,
     mid <- as.numeric(as.character(DTWtable[i,"mid"]))
     pid <- as.numeric(as.character(DTWtable[i,"pid"]))
 
-    discharges[i,] <- as.numeric(as.character(RunFUSE(DATA, ParameterSet[pid,],
+    if (verbose == TRUE) print(paste("Calculating DTW for simulation",i,"out of",dim(DTWtable)[1],
+                                     "model",mid,"param",pid))
+
+    simulatedQ <- as.numeric(as.character(RunFUSE(DATA, ParameterSet[pid,],
                                                   deltim, mid)[pperiod]))
-    DTWtable$dtw_score[i] <- dtw(observedQ, discharges[i,])$distance
+
+    if (any(is.na(simulatedQ))) print("NAs found!")
+
+    # DTWtable$dtw_score[i] <- dtw(observedQ, simulatedQ)$distance
+    DTWtable$dtw_score[i] <- dtw(observedQ, simulatedQ,distance.only=TRUE)$normalizedDistance
+    discharges[i,] <- simulatedQ
 
   }
 

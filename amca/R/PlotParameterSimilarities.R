@@ -8,7 +8,7 @@
 #' @return A plot comparing prior and posterior parameter distributions.
 #'
 #' @examples
-#' # Plot_ParameterSimilarities(RealisationsTable,selectedParams="",synparameters)
+#' # Plot_ParameterSimilarities(RealisationsTable, parameters)
 #'
 
 PlotParameterSimilarities <- function(RealisationsTable,
@@ -56,9 +56,13 @@ PlotParameterSimilarities <- function(RealisationsTable,
     }
   }
 
+  col2remove <- c()
   for (newCol in 1:dim(NewParamTable)[2]){
-    if (all(is.na(NewParamTable[,newCol]))) NewParamTable <- NewParamTable[,-newCol]
+    if (all(is.na(NewParamTable[,newCol]))) {
+      col2remove <- append(col2remove,newCol)
+    }
   }
+  if ( length(col2remove)>1 ) NewParamTable <- NewParamTable[,-col2remove]
 
   #NewParamTable <- NewParamTable[,which(!is.na(NewParamTable[1,]))]
   newparams <- NewParamTable

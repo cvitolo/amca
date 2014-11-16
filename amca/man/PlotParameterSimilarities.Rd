@@ -22,6 +22,6 @@ A plot comparing prior and posterior parameter distributions.
 Plot prior and posterior parameter distributions (for comparison).
 }
 \examples{
-# Plot_ParameterSimilarities(RealisationsTable,selectedParams="",synparameters)
+# Plot_ParameterSimilarities(RealisationsTable, parameters)
 }
 

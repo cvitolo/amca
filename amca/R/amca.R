@@ -33,9 +33,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   options(warn=-1) # do not print warnings
 
   # load list of availabe models
-  load(system.file("data/modlist.rda", package = "fuse"))
-  modlist <- modlist # to remove NOTE in R CMD check
-  ModelList <- PrepareTable() ; rm(modlist)
+  ModelList <- PrepareTable()
 
   if (!is.null(selectedModels)){
 
@@ -229,7 +227,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
     # Calculate the Filtered Ensemble with a non recursive SOM method + DTW
 
     temp <- RedundancyReduction(ParetoFrontTable,DATA,the.som,
-                                parameters,observedQ,deltim,pperiod)
+                                parameters,observedQ,deltim,pperiod,verbose)
 
     RETable <- data.frame(lapply(temp$table, as.character),
                           stringsAsFactors=FALSE)

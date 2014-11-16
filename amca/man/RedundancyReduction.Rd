@@ -4,7 +4,7 @@
 \title{Redundancy reduction process using Dynamic Time Warping.}
 \usage{
 RedundancyReduction(ParetoFront, DATA, the.som, ParameterSet, observedQ, deltim,
-  pperiod)
+  pperiod, verbose = FALSE)
 }
 \arguments{
 \item{ParetoFront}{Pareto Frontier}
@@ -20,6 +20,8 @@ RedundancyReduction(ParetoFront, DATA, the.som, ParameterSet, observedQ, deltim,
 \item{deltim}{time step in days}
 
 \item{pperiod}{is the vector of time step to take into consideration when calculating performances}
+
+\item{verbose}{if set to TRUE it prints running information (default = FALSE)}
 }
 \value{
 A subset of the table containing the filtered configurations.
