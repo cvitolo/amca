@@ -83,3 +83,9 @@ results$RETable
 PlotEnsembles(results$BoundsRE$bounds, results$BoundsRE$discharges,
               label1="min-max", label2="percentiles")
 ```
+
+### Warnings
+This package and functions herein are part of an experimental open-source project. They are provided as is, without any guarantee.
+
+# Leave your feedback
+I would greatly appreciate if you could leave your feedbacks via email (cvitolodev@gmail.com).

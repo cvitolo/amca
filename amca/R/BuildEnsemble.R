@@ -25,6 +25,8 @@ BuildEnsemble <- function( DATA,
                            lowerP=0.05, upperP=0.95,
                            verbose=FALSE) {
 
+  pperiod <- (warmup + 1):dim(DATA)[1] # performance period
+
   p <- sort(as.numeric(as.character(unique(Realisations2Use$pid))))
   m <- sort(as.numeric(as.character(unique(Realisations2Use$mid))))
 
@@ -38,18 +40,18 @@ BuildEnsemble <- function( DATA,
     mcounter <- 0
     for (mid in m){
 
-      if (verbose==TRUE) {
+      mcounter <- mcounter + 1
 
-        mcounter <- mcounter + 1
+      if (verbose==TRUE) {
 
         print(paste("FUN: BuildEnsemble - Opening MID ",
                     mid,". ",mcounter, " out of ",length(m), sep=""))
 
       }
 
-      load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
+      load( paste(SimulationFolder,"MID_",mid,".Rdata",sep="") )
 
-      if (exists("discharges")){
+      if ( exists("discharges") ){
 
         discharges <- discharges # to avoid NOTE from check
 
@@ -60,9 +62,13 @@ BuildEnsemble <- function( DATA,
 
         minQ <- minQ; maxQ <- maxQ # to avoid NOTE from check
 
-        minD <- minQ[dim(DATA)[1]-warmup]
-        maxD <- maxQ[dim(DATA)[1]-warmup]
-
+        if ( mcounter == 1 ){
+          minD <- minQ[pperiod]
+          maxD <- maxQ[pperiod]
+        }else{
+          minD <- apply(rbind(minD,minQ[pperiod]),2,min, na.rm=TRUE)
+          maxD <- apply(rbind(maxD,minQ[pperiod]),2,max, na.rm=TRUE)
+        }
       }
 
     }
