@@ -1,29 +1,24 @@
 #' Run the AMCA algorithm.
 #'
-#' @param DATA This is a data.frame containing the observed time series (zoo objects).
-#'             It is structured into three columns:
-#'             "P" containing precipitation,
-#'             "E" containing evapo-transpiration and
-#'             "Q" containing streamflow discharge.
+#' @param DATA This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: "P" containing precipitation, "E" containing evapo-transpiration and "Q" containing streamflow discharge.
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
 #' @param MPIs list of functions describing the Model performance Indices.
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
-#' @param deltim time step in days
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
-#' @param warmup Number of initial time steps to ignore (default = 0).
+#' @param warmup Number of initial time steps to ignore (default = 10% of DATA's length).
 #' @param verbose if set to TRUE it prints running information (default = FALSE).
 #' @param PreSel if set to FALSE the preliminary selection step is skipped (default = TRUE).
-#' @param allBounds if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE).
+#' @param allBounds if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE). In this case the MC simulations should produce 2 ojects: indices and simulates discharge table.
 #'
 #' @return A list of objects to infer.
 #'
 #' @examples
-#' # results <- damach( DATA, parameters, MPIs, ResultsFolder, deltim )
+#' # results <- damach( DATA, parameters, MPIs, ResultsFolder )
 #'
 
-amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
-                 selectedModels=NULL, warmup=0, verbose=FALSE,
-                 PreSel=TRUE,allBounds=FALSE){
+amca <- function(DATA, parameters, MPIs, ResultsFolder,
+                 selectedModels=NULL, warmup=NULL, verbose=FALSE,
+                 PreSel=TRUE, allBounds=FALSE){
 
   #*****************************************************************************
   message("###################################################################")
@@ -31,6 +26,11 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder, deltim,
   #*****************************************************************************
 
   options(warn=-1) # do not print warnings
+  deltim <- as.numeric( difftime(index(DATA)[2], index(DATA)[1], units="days") )
+
+  if ( is.null(warmup) ) {
+    round(dim(DATA)[1]/10,0) # warmup = 10% of DATA's length
+  }
 
   # load list of availabe models
   ModelList <- PrepareTable()
