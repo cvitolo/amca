@@ -3,15 +3,11 @@
 \alias{amca}
 \title{Run the AMCA algorithm.}
 \usage{
-amca(DATA, parameters, MPIs, ResultsFolder, deltim, selectedModels = NULL,
-  warmup = 0, verbose = FALSE, PreSel = TRUE, allBounds = FALSE)
+amca(DATA, parameters, MPIs, ResultsFolder, selectedModels = NULL,
+  warmup = NULL, verbose = FALSE, PreSel = TRUE, allBounds = FALSE)
 }
 \arguments{
-\item{DATA}{This is a data.frame containing the observed time series (zoo objects).
-It is structured into three columns:
-"P" containing precipitation,
-"E" containing evapo-transpiration and
-"Q" containing streamflow discharge.}
+\item{DATA}{This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: "P" containing precipitation, "E" containing evapo-transpiration and "Q" containing streamflow discharge.}
 
 \item{parameters}{This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.}
 
@@ -19,17 +15,15 @@ It is structured into three columns:
 
 \item{ResultsFolder}{Path to the folder containing results from MC simulations.}
 
-\item{deltim}{time step in days}
-
 \item{selectedModels}{(OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).}
 
-\item{warmup}{Number of initial time steps to ignore (default = 0).}
+\item{warmup}{Number of initial time steps to ignore (default = 10% of DATA's length).}
 
 \item{verbose}{if set to TRUE it prints running information (default = FALSE).}
 
 \item{PreSel}{if set to FALSE the preliminary selection step is skipped (default = TRUE).}
 
-\item{allBounds}{if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE).}
+\item{allBounds}{if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE). In this case the MC simulations should produce 2 ojects: indices and simulates discharge table.}
 }
 \value{
 A list of objects to infer.
@@ -38,6 +32,5 @@ A list of objects to infer.
 Run the AMCA algorithm.
 }
 \examples{
-# results <- damach( DATA, parameters, MPIs, ResultsFolder, deltim )
+# results <- damach( DATA, parameters, MPIs, ResultsFolder )
 }
-

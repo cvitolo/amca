@@ -25,11 +25,16 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
   message("")
   #*****************************************************************************
 
+  if ( any(is.na(DATA)) ) {
+    message("DATA contains NA's, please remove them before running AMCA.")
+    stop
+  }
+
   options(warn=-1) # do not print warnings
   deltim <- as.numeric( difftime(index(DATA)[2], index(DATA)[1], units="days") )
 
   if ( is.null(warmup) ) {
-    round(dim(DATA)[1]/10,0) # warmup = 10% of DATA's length
+    warmup <- round(dim(DATA)[1]/10,0) # warmup = 10% of DATA's length
   }
 
   # load list of availabe models
