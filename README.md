@@ -1,10 +1,15 @@
 AMCA (R-package)
 ================
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.15721.svg)](http://dx.doi.org/10.5281/zenodo.15721)
+
 Automatic Model Configuration Algorithm (AMCA)
 
 This is a data mining procedure based on unsupervised machine learning
 techniques to automatically configure hydrological conceptual rainfall-runoff models such as FUSE.
+
+**To cite this software:**  
+Vitolo C., Automatic Model Configuration Algorithm (AMCA, R-package), (2015), GitHub repository, https://github.com/cvitolo/r_amca, doi: http://dx.doi.org/10.5281/zenodo.15721
 
 #### Basics
 Install and load packages
