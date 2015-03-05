@@ -130,10 +130,17 @@ PrepareTable <- function(reduced=FALSE){
     if(damachModelList[row,"arch2"] == 34) {
       damachModelList[row,"maxwatr_2"] <- dummyParameterSet$maxwatr_2   # maximum total storage in layer2 (mm)
       damachModelList[row,"baserte"]   <- dummyParameterSet$baserte     # baseflow rate (mm day-1)
-      damachModelList[row,"loglamb"]   <- dummyParameterSet$loglamb     # mean value of the log-transformed topographic index (m)
-      damachModelList[row,"tishape"]   <- dummyParameterSet$tishape     # shape parameter for the topo index Gamma distribution (-)
-      damachModelList[row,"qb_powr"]   <- dummyParameterSet$qb_powr     # baseflow exponent (-)
+      # the params below are always used to calculate qbsat!
+      # damachModelList[row,"loglamb"]   <- dummyParameterSet$loglamb     # mean value of the log-transformed topographic index (m)
+      # damachModelList[row,"tishape"]   <- dummyParameterSet$tishape     # shape parameter for the topo index Gamma distribution (-)
+      # damachModelList[row,"qb_powr"]   <- dummyParameterSet$qb_powr     # baseflow exponent (-)
     }
+
+    # the params below are always used to calculate qbsat!
+    # this also mean that loglamb and tishape are always calculated!
+    damachModelList[row,"loglamb"]   <- dummyParameterSet$loglamb     # mean value of the log-transformed topographic index (m)
+    damachModelList[row,"tishape"]   <- dummyParameterSet$tishape     # shape parameter for the topo index Gamma distribution (-)
+    damachModelList[row,"qb_powr"]   <- dummyParameterSet$qb_powr     # baseflow exponent (-)
 
     # (4) surface runoff
     # arno_x_vic = arno/xzang/vic parameterization (upper zone control)
