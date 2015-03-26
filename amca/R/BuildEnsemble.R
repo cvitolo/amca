@@ -17,13 +17,13 @@
 #' # BuildEnsemble(DATA, warmup, Realisations2Use, SimulationFolder)
 #'
 
-BuildEnsemble <- function( DATA,
-                           warmup,
-                           Realisations2Use,
-                           SimulationFolder,
-                           maxminOnly=TRUE,
-                           lowerP=0.05, upperP=0.95,
-                           verbose=FALSE) {
+BuildEnsemble <- function(DATA,
+                          warmup,
+                          Realisations2Use,
+                          SimulationFolder,
+                          maxminOnly=TRUE,
+                          lowerP=0.05, upperP=0.95,
+                          verbose=FALSE) { 
 
   pperiod <- (warmup + 1):dim(DATA)[1] # performance period
 
