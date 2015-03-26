@@ -1,11 +1,11 @@
-#' Run the AMCA algorithm.
+#' AMCA algorithm.
 #'
-#' @param DATA This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: "P" containing precipitation, "E" containing evapo-transpiration and "Q" containing streamflow discharge.
+#' @param DATA This is a data.frame containing the observed time series (zoo objects). It is structured into three columns containing: precipitation (P), potential evapo-transpiration (E) and streamflow discharge (Q).
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
 #' @param MPIs list of functions describing the Model performance Indices.
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
-#' @param warmup Number of initial time steps to ignore (default = 10% of DATA's length).
+#' @param warmup Number of initial time steps to ignore (default = 10 percent of the length of DATA).
 #' @param verbose if set to TRUE it prints running information (default = FALSE).
 #' @param PreSel if set to FALSE the preliminary selection step is skipped (default = TRUE).
 #' @param allBounds if set to TRUE it calculates ensembles of intermediate steps, if set to FALSE only BoundIE and BoundsRE are calculated (default = FALSE). In this case the MC simulations should produce 2 ojects: indices and simulates discharge table.
@@ -34,7 +34,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
   deltim <- as.numeric( difftime(index(DATA)[2], index(DATA)[1], units="days") )
 
   if ( is.null(warmup) ) {
-    warmup <- round(dim(DATA)[1]/10,0) # warmup = 10% of DATA's length
+    warmup <- round(dim(DATA)[1]/10,0) # default warmup = 10% of DATA's length
   }
 
   # load list of availabe models
@@ -101,6 +101,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
                             AllRealisations,
                             ResultsFolder,
                             maxminOnly = TRUE,
+                            lowerP=0.05, upperP=0.95,
                             verbose)
 
   message(paste("IE's dimensions =", dim(Indices)[1], "x",
