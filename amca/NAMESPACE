@@ -1,4 +1,5 @@
 import(zoo)
+import(xts)
 import(ggplot2)
 import(emoa)
 import(som)
@@ -8,5 +9,7 @@ import(fanplot)
 import(colorspace)
 import(RColorBrewer)
 import(reshape2)
+import(qualV)
+import(tiger)
 
 exportPattern("^[^\\.]")
