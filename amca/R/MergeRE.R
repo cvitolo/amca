@@ -18,12 +18,14 @@ MergeRE <- function(periodRuns, path, parameters){
   for(i in start1:end1){
 
     print(i)
+    results <- NULL
 
     if ( !exists("allRE") ) {
-      results <- NULL
       load(paste(path,i,".rda",sep=""))
       allRE <- results$RETable
-      rm(results)
+    }else{
+      load(paste(path,i,".rda",sep=""))
+      allRE <- rbind(allRE,results$RETable)
     }
 
   }
@@ -65,12 +67,20 @@ MergeRE <- function(periodRuns, path, parameters){
       }else{
 
         myCol <- eval(parse(text=paste("parameters$",nameColumn,sep="")))
-
-        myBreaks <- seq(min(myCol), max(myCol),
-                        by = (max(myCol)-min(myCol))/numberOfBreaks)
-
-        newTable <- cbind(newTable,cut(as.numeric(tableX[,parColumn]),
-                                       breaks=myBreaks))
+        
+        if (all(myCol==-999)){
+          
+          newTable <- cbind(newTable,rep(NA,dim(newTable)[1]))
+          
+        }else{
+          
+          myBreaks <- seq(min(myCol), max(myCol),
+                          by = (max(myCol)-min(myCol))/numberOfBreaks)
+          
+          newTable <- cbind(newTable,cut(as.numeric(tableX[,parColumn]),
+                                         breaks=myBreaks))
+          
+        }
 
       }
 
@@ -79,6 +89,12 @@ MergeRE <- function(periodRuns, path, parameters){
   }
 
   names(newTable) <- names(tableX)
+  
+  # remove all NA
+  if (any(sapply(newTable, function(x)all(is.na(x))))) {
+    cols2remove <- which(sapply(newTable, function(x)all(is.na(x))))
+    newTable <- newTable[,-cols2remove]
+  }
 
 
   return(newTable)
