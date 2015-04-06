@@ -218,7 +218,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
     temp <- matrix(as.numeric(as.character(unlistedPF)),
                    nrow = dim(ParetoFrontTable)[1],
                    ncol = length(names(ObsIndices)),
-                   byrow = TRUE)
+                   byrow = FALSE)
 
     the.som <- som(temp,
                    xdim=dimX, ydim=dimY,
