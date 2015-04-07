@@ -166,7 +166,7 @@ amca <- function(DATA, parameters, MPIs, ResultsFolder,
   #*****************************************************************************
   message("PARETO FRONTIER")
   #*****************************************************************************
-  temp <- ParetoFrontier(Indices, PreSelTable, ObsIndices)
+  temp <- ParetoFrontier(PreSelTable, ObsIndices)
 
   ParetoFrontTable <- data.frame(lapply(temp, as.character),
                                  stringsAsFactors=FALSE)

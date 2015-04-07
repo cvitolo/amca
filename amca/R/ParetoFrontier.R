@@ -1,27 +1,37 @@
 #' Generate a table containing only non-dominated realisations based on MPIs and their Pareto Frontier.
 #'
-#' @param Indices 3d array containing indices (1000 parameter sets x 10 perf. measures x 252 model structures)
 #' @param realisations list of model structures to take into account
 #' @param ObsIndices this is the list of model performance indices calculated from observations.
 #'
 #' @return a subset of the initial dataset containing only non-dominated realisations
 #'
 #' @examples
-#' # ParetoFrontier(Indices, PreSelTable, ObsIndices)
+#' # ParetoFrontier(PreSelTable, ObsIndices)
 #'
 
-ParetoFrontier <- function(Indices,realisations,ObsIndices){
+ParetoFrontier <- function(realisations,ObsIndices){
 
-  mat <- matrix(as.numeric(as.character(unlist(realisations[,names(ObsIndices)],
-                                               use.names = FALSE))),
-                ncol = dim(Indices)[2], byrow = FALSE)
+  mat <- data.matrix(realisations[,names(ObsIndices)])
+
+  # remove NA from mat
+  mat <- na.omit(mat[,names(ObsIndices)])
 
   # matrix with points
   pf  <- t(nondominated_points(t( mat )))
 
-  x <- RowMatch(realisations[,names(ObsIndices)],pf)
+  myRows <- c()
+  counter <- 0
+  indices <- realisations[,names(ObsIndices)]
+  for (r in 1:dim(pf)[1]){
+    counter <- counter + 1
+    temp <- RowMatch(indices, pf[r,])
+    if (!(temp %in% myRows)) {
+      myRows <- c(myRows,temp)
+      indices[temp,] <- NA
+    }
+  }
 
-  pf_extended <- realisations[x,]
+  pf_extended <- realisations[myRows,]
 
   rows2remove <- c()
   for (r in 2:dim(pf_extended)[1]){
