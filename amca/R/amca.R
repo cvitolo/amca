@@ -74,7 +74,7 @@ amca <- function(DATA, ResultsFolder,
   myThreshold <- SetThreshold(ModelList, Indices, verbose=TRUE)
   PreSelReal <- PreSelection(ModelList, Indices, threshold = myThreshold)
 
-  PreSelTable <- SelectIndices(PreSelReal)
+  PreSelTable <- SelectIndices(PreSelReal, Indices, ModelList)
 
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
