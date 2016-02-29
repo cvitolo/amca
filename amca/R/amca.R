@@ -51,12 +51,12 @@ amca <- function(DATA, ResultsFolder,
 
   # Find out how many parameter sets were used by looking at the first output
   discharges <- NULL
-  load(dir(ResultsFolder)[1])
+  load(paste(ResultsFolder, dir(ResultsFolder)[1], sep=""))
   numberOfParamSets <- dim(discharges)[1]
 
   # Build Initial Ensemble of MPIs #############################################
   Indices <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
-                                    nIndices=4, verbose=TRUE)
+                                 nIndices=4, verbose=TRUE)
 
   ### BUILD ARRAY P ############################################################
   # Convert Infs and high numbers to NA
