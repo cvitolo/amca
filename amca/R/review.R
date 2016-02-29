@@ -14,8 +14,8 @@ review <- function(IE, RE){
   spread1 <- mean(IE$uQ - IE$lQ)
 
   # Calculate ACCURACY / RELIABILITY (YADAV et al. 2007)
-  indicator1 <- rep(NA,dim(IE$bounds)[1])
-  for (t in 1:dim(IE$bounds)[1]){
+  indicator1 <- rep(NA,dim(IE)[1])
+  for (t in 1:dim(IE)[1]){
     indicator1[t] <- ifelse(IE$Qobs[t] <= IE$uQ[t] && IE$Qobs[t] >= IE$lQ[t],1,0)
   }
   accuracyIE <- sum(indicator1)/dim(IE)[1]
@@ -23,11 +23,11 @@ review <- function(IE, RE){
 
   #*****************************************************************************
 
-  spread2 <- mean(RE$uQ - RE$lQ)
+  spread2 <- mean(RE$bounds$uQ - RE$bounds$lQ)
 
   indicator2 <- rep(NA,dim(RE$bounds)[1])
   for (t in 1:dim(RE$bounds)[1]){
-    if (IE$Qobs[t] <= RE$uQ[t] && IE$Qobs[t] >= RE$lQ[t]) {
+    if (IE$Qobs[t] <= RE$bounds$uQ[t] && IE$Qobs[t] >= RE$bounds$lQ[t]) {
       indicator2[t] <- 1
     }else{
       indicator2[t] <- 0
@@ -56,4 +56,3 @@ review <- function(IE, RE){
                    "reliabilityRE" = reliabilityRE)))
 
 }
-

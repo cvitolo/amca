@@ -18,8 +18,8 @@
 #'
 
 BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
-                          lowerP=0.05, upperP=0.95,
-                          verbose=FALSE, outputQ = FALSE) {
+                          lowerP = 0.05, upperP = 0.95,
+                          verbose = FALSE, outputQ = FALSE) {
 
   if (length(MIDs) >= 624 & length(PIDs) >= 10000){
 
@@ -38,7 +38,7 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
     rowEnd <- length(PIDs)
     for (mid in MIDs){
 
-      if (verbose==TRUE) {
+      if (verbose) {
         print(paste("FUN: BuildEnsemble - Opening MID ", mid, sep=""))
       }
 

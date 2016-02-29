@@ -83,12 +83,17 @@ amca <- function(DATA, ResultsFolder,
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)
   # library(dtw)
-  REtable <- RedundancyReduction(PF, observedQ = DATA$Q[pperiod], verbose=TRUE)
+  REtable <- RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 
   # REVIEW #####################################################################
   IE <- BuildEnsemble(observedQ, ResultsFolder,
-                      ModelList$mid, 1:length(numberOfParamSets))
-  RE <- BuildEnsemble(observedQ, ResultsFolder, REtable$mid, REtable$PIDs)
+                      ModelList$mid, 1:length(numberOfParamSets),
+                      verbose = TRUE)
+
+  MIDs <- as.numeric(as.character(REtable$mid))
+  PIDs <- as.numeric(as.character(REtable$pid))
+  RE <- BuildEnsemble(observedQ, ResultsFolder, MIDs, PIDs, outputQ = TRUE)
+
   reviewCoefficients <- review(IE, RE)
 
   return(list("IE" = IE, "RE" = RE, "reviewCoefficients" = reviewCoefficients))
