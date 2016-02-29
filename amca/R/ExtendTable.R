@@ -4,23 +4,24 @@
 #' @param ModelList a table that contains at list 1 colum named "mid" (list of model structures). Other informations can be added as additional columns but will be ignored.
 #' @param Indices this is the array containing the Model Performance Indices rescaled in the range [0,1], see \code{RescaleIndices}.
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
-#' @param ObsIndices this is the list of model performance indices calculated from observations.
+#' @param ObsIndicesNames this is the list of model performance indices calculated from observations.
 #' @param verbose if set to TRUE it prints running information
 #'
 #' @return Extended data.frame
 #'
 #' @examples
-#' # ExtendTable(PreSel,ModelList,Indices,parameters,ObsIndices)
+#' # ExtendTable(PreSel,ModelList,Indices,parameters,ObsIndicesNames)
 #'
 
 ExtendTable <- function(realisations,ModelList,Indices,parameters,
-                        ObsIndices, verbose){
+                        ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF"),
+                        verbose=TRUE){
 
   colNamesModels <- c("rferr","arch1","arch2","qsurf",
                       "qperc","esoil","qintf","q_tdh")
 
   colNames <- c(names(realisations),
-                names(ObsIndices),
+                ObsIndicesNames,
                 colNamesModels,
                 names(parameters))
 
@@ -62,7 +63,7 @@ ExtendTable <- function(realisations,ModelList,Indices,parameters,
                                                           colNamesModels]),
                                      nrow=length(colsMod),ncol=length(rows)))
 
-    colsMod <- which(colNames %in% names(ObsIndices))
+    colsMod <- which(colNames %in% ObsIndicesNames)
     counterPIDs <- as.numeric(tableX[rows,which(colNames=="pid")])
     tableX[rows,colsMod] <- Indices[counterPIDs,,counterMID]
 

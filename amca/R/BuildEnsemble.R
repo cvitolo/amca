@@ -2,111 +2,92 @@
 #'
 #' Results are generally divided in multiple files, therefore the function requires the simulations' folder path.
 #'
-#' @param DATA this is the data frame containing the observations
-#' @param warmup this is the warmup period
-#' @param Realisations2Use list of the filtered realisations
-#' @param SimulationFolder path to the folder where simulation results are stored
-#' @param maxminOnly if set to FALSE it calculates max/min bounds and upper/lower percentile bounds, otherwise only the max/min bounds (default is FALSE).
+#' @param observedQ this is the observed streamflows
+#' @param SimulationFolder path to the folder where simulations are stored
+#' @param MIDs list of model structures to use
+#' @param PIDs list of parameter indices to use
 #' @param lowerP lower probability (e.g. 0.05 means 5th percentile)
 #' @param upperP upper probability (e.g. 0.95 means 95th percentile)
 #' @param verbose if set to TRUE it prints running information
+#' @param outputQ if set to TRUE, the funtion also returns the discharges matrix
 #'
-#' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (LB), upper bound (UB), lower percentile (LP), upper percentile (UP)
+#' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ).
 #'
 #' @examples
-#' # BuildEnsemble(DATA, warmup, Realisations2Use, SimulationFolder)
+#' # BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs)
 #'
 
-BuildEnsemble <- function(DATA,
-                          warmup,
-                          Realisations2Use,
-                          SimulationFolder,
-                          maxminOnly=TRUE,
+BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
                           lowerP=0.05, upperP=0.95,
-                          verbose=FALSE) { 
+                          verbose=FALSE, outputQ = FALSE) {
 
-  pperiod <- (warmup + 1):dim(DATA)[1] # performance period
+  if (length(MIDs) >= 624 & length(PIDs) >= 10000){
 
-  p <- sort(as.numeric(as.character(unique(Realisations2Use$pid))))
-  m <- sort(as.numeric(as.character(unique(Realisations2Use$mid))))
+    ### Build Initial Ensemble using bigmemory/biganalytics ####################
+    # library(bigmemory)
+    # library(biganalytics)
 
-  allDischarges <- NA
-
-  if (maxminOnly == TRUE) {
-
-    minD <- matrix(NA,nrow=0,ncol=dim(DATA)[1]-warmup)
-    maxD <- matrix(NA,nrow=0,ncol=dim(DATA)[1]-warmup)
-
-    mcounter <- 0
-    for (mid in m){
-
-      mcounter <- mcounter + 1
+    # Create empty big.matrix (Initial Ensemble: A)
+    A <- filebacked.big.matrix(nrow = length(PIDs) * length(MIDs),
+                               ncol = length(observedQ),
+                               type='double', init=NULL,
+                               backingfile="dischargesSynthetic.bin",
+                               descriptorfile="dischargesSynthetic.desc")
+    # Fill the matrix
+    rowStart <- 1
+    rowEnd <- length(PIDs)
+    for (mid in MIDs){
 
       if (verbose==TRUE) {
-
-        print(paste("FUN: BuildEnsemble - Opening MID ",
-                    mid,". ",mcounter, " out of ",length(m), sep=""))
-
+        print(paste("FUN: BuildEnsemble - Opening MID ", mid, sep=""))
       }
 
-      load( paste(SimulationFolder,"MID_",mid,".Rdata",sep="") )
-
-      if ( exists("discharges") ){
-
-        discharges <- discharges # to avoid NOTE from check
-
-        minD <- apply(rbind(minD,discharges),2,min, na.rm=TRUE)
-        maxD <- apply(rbind(maxD,discharges),2,max, na.rm=TRUE)
-
-      }else{
-
-        minQ <- minQ; maxQ <- maxQ # to avoid NOTE from check
-
-        if ( mcounter == 1 ){
-          minD <- minQ[pperiod]
-          maxD <- maxQ[pperiod]
-        }else{
-          minD <- apply(rbind(minD,minQ[pperiod]),2,min, na.rm=TRUE)
-          maxD <- apply(rbind(maxD,minQ[pperiod]),2,max, na.rm=TRUE)
-        }
-      }
-
+      discharges <- NULL
+      load(paste(SimulationFolder, "MID_", mid, ".Rdata", sep=""))
+      A[rowStart:rowEnd,] <- discharges
+      rowStart <- rowEnd + 1
+      rowEnd <- rowEnd + length(PIDs)
     }
 
-    bounds <- data.frame("Dates"=index(DATA$P)[(warmup+1):(dim(DATA)[1])],
-                         "Qobs"=DATA$Q[(warmup+1):(dim(DATA)[1])],
-                         "LB"=minD,
-                         "UB"=maxD,
-                         "LP"=rep(NA,dim(DATA)[1]-warmup),
-                         "UP"=rep(NA,dim(DATA)[1]-warmup))
+    # Now force any modified information to be written to A (file-backed)
+    # flush(A) # This is not necessary!
+
+    # If I need to read previously created big.matrix:
+    # A <-  attach.big.matrix(dget("dischargesSynthetic.desc"))
 
   }else{
 
-    allDischarges <- matrix(NA,nrow=0,ncol=dim(DATA)[1]-warmup)
+    A <- matrix(NA, nrow=0, ncol=length(observedQ))
 
-    mcounter <- 0
-    for (mid in m){
+    for (mid in MIDs){
 
       if (verbose==TRUE) {
-        mcounter <- mcounter + 1
-        print(paste("FUN: BuildEnsemble - Opening MID ",
-                    mid," (",mcounter, " out of ",length(m),")", sep=""))
+        print(paste("FUN: BuildEnsemble - Opening MID ", mid, sep=""))
       }
 
+      discharges <- NULL
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
-      allDischarges <- rbind(allDischarges,discharges[p,])
+      A <- rbind(A,discharges[PIDs,])
 
     }
 
-    bounds <- data.frame("Dates"=index(DATA$P)[(warmup+1):(dim(DATA)[1])],
-                         "Qobs"=DATA$Q[(warmup+1):(dim(DATA)[1])],
-                         "LB"=apply(allDischarges, 2, min),
-                         "UB"=apply(allDischarges, 2, max),
-                         "LP"=apply(allDischarges, 2, quantile, probs = lowerP),
-                         "UP"=apply(allDischarges, 2, quantile, probs = upperP))
-
   }
 
-  return(list("discharges" = allDischarges, "bounds" = bounds))
+  lQ <- apply(A, 2, quantile, probs = lowerP)
+  mQ <- apply(A, 2, quantile, probs = 0.50)
+  uQ <- apply(A, 2, quantile, probs = upperP)
+
+  bounds <- data.frame("Dates"= 1:length(lQ), "Qobs"=observedQ,
+                   "lQ"=lQ, "mQ"=mQ, "uQ"=uQ)
+
+  if (outputQ) {
+
+    return(list("bounds" = bounds, "discharges" = A))
+
+  }else{
+
+    return(bounds)
+
+  }
 
 }

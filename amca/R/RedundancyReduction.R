@@ -1,12 +1,9 @@
-#' Redundancy reduction process using Dynamic Time Warping.
+#' Redundancy reduction process using SOM clustering and Dynamic Time Warping.
 #'
 #' @param ParetoFront Pareto Frontier
-#' @param DATA this is the data frame containing the observations
-#' @param the.som som map
-#' @param ParameterSet is the table of parameters
 #' @param observedQ observed discharge (warmup removed)
-#' @param deltim time step in days
-#' @param pperiod is the vector of time step to take into consideration when calculating performances
+#' @param ResultsFolder Path to the folder containing results from MC simulations.
+#' @param ObsIndicesNames is the list of indices names.
 #' @param verbose if set to TRUE it prints running information (default = FALSE)
 #'
 #' @return A subset of the table containing the filtered configurations.
@@ -16,55 +13,69 @@
 #' @examples
 #' # RedundancyReduction(ParetoFrontTable,DATA,the.som,parameters,observedQ,deltim,pperiod)
 #'
-RedundancyReduction <- function(ParetoFront,DATA,the.som,
-                                ParameterSet,observedQ,deltim,pperiod,verbose=FALSE){
+RedundancyReduction <- function(ParetoFront, observedQ, ResultsFolder,
+                                ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF"),
+                                verbose=FALSE){
 
-  DTWtable <- ParetoFront
-  DTWtable$ClusterX <- the.som$visual[,1]
-  DTWtable$ClusterY <- the.som$visual[,2]
-  DTWtable$dtw_score <- NA
+  # Cluster non-dominated simulations
+  # library(som)
 
-  discharges <- matrix(NA,ncol=length(pperiod),nrow=dim(DTWtable)[1])
+  # observedQ <- DATA$Q[pperiod]
 
-  for ( i in 1:dim(DTWtable)[1] ){
+  dimX <- ceiling(sqrt(dim(PF)[1]))
+  dimY <- ceiling(dim(PF)[1]/dimX)
 
-    mid <- as.numeric(as.character(DTWtable[i,"mid"]))
-    pid <- as.numeric(as.character(DTWtable[i,"pid"]))
+  PFnumeric <- apply(PF[,ObsIndicesNames], 2, as.numeric)
 
-    if (verbose == TRUE) print(paste("Calculating DTW for simulation",i,"out of",dim(DTWtable)[1],
-                                     "model",mid,"param",pid))
+  the.som <- som(PFnumeric,
+                 xdim=dimX, ydim=dimY,
+                 init="linear",neigh="gaussian",topol="rect")
 
-    simulatedQ <- as.numeric(as.character(RunFUSE(DATA, ParameterSet[pid,],
-                                                  deltim, mid)[pperiod]))
+  PF$ClusterX <- the.som$visual[,1]
+  PF$ClusterY <- the.som$visual[,2]
+  PF$dtw_score <- NA
 
-    if (any(is.na(simulatedQ))) print("NAs found!")
+  # library(dtw)
+  for ( i in 1:dim(PF)[1] ){
 
-    # DTWtable$dtw_score[i] <- dtw(observedQ, simulatedQ)$distance
-    DTWtable$dtw_score[i] <- dtw(observedQ, simulatedQ,distance.only=TRUE)$normalizedDistance
-    discharges[i,] <- simulatedQ
+    mid <- PF$mid[i]
+    pid <- PF$pid[i]
+
+    if (verbose) {
+      print(paste(i, "out of ", dim(PF)[1], "- MID", mid, "PID", pid))
+    }
+
+    discharges <- NULL
+    load(paste(ResultsFolder, "MID_", mid, ".Rdata", sep=""))
+
+    if(i == 1){
+      dischargesDTW <- discharges[pid,]
+    }else{
+      dischargesDTW <- rbind(dischargesDTW, discharges[pid,])
+    }
+
+    PF$dtw_score[i] <- dtw(observedQ, discharges[pid,],
+                           distance.only=TRUE)$normalizedDistance
 
   }
 
-  uniqueClusters <- unique(DTWtable[,c("ClusterX","ClusterY")])
-  reducedEnsemble <- data.frame(matrix(NA,
-                                       nrow=dim(uniqueClusters)[1],
-                                       ncol=dim(DTWtable)[2]))
-  names(reducedEnsemble) <- names(DTWtable)
+  uniqueClusters <- unique(PF[,c("ClusterX","ClusterY")])
 
   allRows <- c()
   for (clusternumber in 1:dim(uniqueClusters)[1]){
 
-    # print(paste("Cluster number",clusternumber))
-    rows <- which(DTWtable[,"ClusterX"]==uniqueClusters[clusternumber,"ClusterX"] &
-                  DTWtable[,"ClusterY"]==uniqueClusters[clusternumber,"ClusterY"])
+    if (verbose) {
+      print(paste("Cluster number",clusternumber))
+    }
 
-    allRows <- append(allRows,
-                      which(DTWtable$dtw_score==min(DTWtable$dtw_score[rows])) )
+    rows <- which(PF[,"ClusterX"] == uniqueClusters[clusternumber,"ClusterX"] &
+                    PF[,"ClusterY"] == uniqueClusters[clusternumber,"ClusterY"])
+
+    allRows <- c(allRows, which(PF$dtw_score==min(PF$dtw_score[rows])) )
 
   }
 
-  reducedEnsemble <- list("table" = DTWtable[sort(allRows),],
-                          "discharges" = discharges)
+  reducedEnsemble <- PF[sort(allRows),]
 
   return(reducedEnsemble)
 

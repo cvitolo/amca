@@ -1,6 +1,6 @@
-#' amca.
+#' Automatic Model Configuration Algorithm (AMCA)
 #'
-#' @name Automatic Model Configuration Algorithm (AMCA)
+#' @name amca-package
 #' @docType package
 #'
 #' @description Data mining algorithm based on unsupervised machine learning techniques to automatically configure hydrological conceptual rainfall-runoff models.

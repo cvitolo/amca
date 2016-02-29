@@ -15,68 +15,62 @@
 #' # PreSelection(ModelList, Indices, threshold)
 #'
 
-PreSelection <- function(ModelList,Indices,threshold,
-                         selectM=TRUE,selectP=TRUE,type="independent"){
+PreSelection <- function(ModelList, Indices, threshold,
+                        selectM = TRUE, selectP = TRUE, type = "independent"){
 
-  SelectedMIDs <- ModelList[,"mid"]        # At the beginning all the models are selected
-  SelectedPIDs <- seq(1:dim(Indices)[1])   # At the beginning all the parameter sets are selected
+  SelectedMIDs <- ModelList[, "mid"]
+  SelectedPIDs <- seq(1:dim(Indices)[1])
 
   for (index in 1:dim(Indices)[2]) {
 
-    # print(index)
+    if (selectM == TRUE) {
 
-    if (selectM == TRUE){
+      ModelScores <- data.frame(mid = ModelList[, "mid"],
+                                score = apply(Indices[, index, ], 2, median,
+                                              na.rm = TRUE))
 
-      # Pre-selection of model structures
-      ModelScores <-  data.frame("mid"=ModelList[,"mid"],
-                                 "score"=apply(Indices[,index,],2,median,
-                                               na.rm=TRUE))
+      GoodModels <- ModelScores$mid[which(ModelScores$score < threshold)]
 
-      GoodModels <- ModelScores$mid[which(ModelScores$score<threshold)]
-      SelectedMIDs <- intersect(GoodModels,SelectedMIDs)
+      SelectedMIDs <- intersect(GoodModels, SelectedMIDs)
 
     }
 
-    if (type=="dependent") {
+    if (type == "dependent") {
+
       mcounters <- which(ModelList$mid %in% SelectedMIDs)
-      myIndices <- Indices[,,mcounters]
+      myIndices <- Indices[, , mcounters]
+
     }else{
+
       myIndices <- Indices
-    }
-
-    if (selectP == TRUE){
-
-      # Pre-selection of parameter sets
-      ParamScores <-  data.frame("pid"   = seq(1:dim(Indices)[1]),
-                                 "score" = apply(Indices[,index,],
-                                                 1, median,na.rm=TRUE))
-
-      GoodParams <- ParamScores$pid[which(ParamScores$score<threshold)]
-      SelectedPIDs <- intersect(GoodParams,SelectedPIDs)
 
     }
 
+    if (selectP == TRUE) {
+
+      ParamScores <- data.frame(pid = seq(1:dim(Indices)[1]),
+                                score = apply(Indices[, index, ], 1, median,
+                                              na.rm = TRUE))
+      GoodParams <- ParamScores$pid[which(ParamScores$score <
+                                            threshold)]
+      SelectedPIDs <- intersect(GoodParams, SelectedPIDs)
+
+    }
   }
 
-  if (length(SelectedMIDs)==0) {
-
-    SelectedMIDs <- ModelList[,"mid"]
-
+  if (length(SelectedMIDs) == 0) {
+    SelectedMIDs <- ModelList[, "mid"]
   }
 
-  if (length(SelectedPIDs)==0) {
-
+  if (length(SelectedPIDs) == 0) {
     SelectedPIDs <- seq(1:dim(Indices)[1])
-
   }
 
-  temp <- data.frame(table("mid"=rep(SelectedMIDs,
-                                     length(SelectedPIDs)),
-                           "pid"=rep(SelectedPIDs,
-                                     length(SelectedMIDs))))
+  temp <- data.frame(table(mid = rep(SelectedMIDs, length(SelectedPIDs)),
+                           pid = rep(SelectedPIDs, length(SelectedMIDs))))
 
-  selectedRealisations <- data.frame(lapply(temp[,1:2], as.character),
-                            stringsAsFactors=FALSE)
+  selectedRealisations <- data.frame(lapply(temp[, 1:2], as.character),
+                                     stringsAsFactors = FALSE)
 
   return(selectedRealisations)
 
