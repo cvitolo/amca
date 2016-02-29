@@ -32,6 +32,7 @@ SelectIndices <- function(realisations, Indices, ModelList,
 
   }
 
+  tableX <- data.frame(tableX)
   names(tableX) <- colNames
 
   return(tableX)
