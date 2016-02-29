@@ -4,8 +4,8 @@
 \alias{RedundancyReduction}
 \title{Redundancy reduction process using SOM clustering and Dynamic Time Warping.}
 \usage{
-RedundancyReduction(ParetoFront, observedQ, ResultsFolder,
-  ObsIndicesNames = c("LAGTIME", "MAE", "NSHF", "NSLF"), verbose = FALSE)
+RedundancyReduction(ParetoFront, observedQ, ResultsFolder, ObsIndicesNames,
+  verbose = FALSE)
 }
 \arguments{
 \item{ParetoFront}{Pareto Frontier}

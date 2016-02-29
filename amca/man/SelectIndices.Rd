@@ -4,8 +4,7 @@
 \alias{SelectIndices}
 \title{Finds Indices for selected realisations.}
 \usage{
-SelectIndices(realisations, Indices, ModelList, ObsIndicesNames = c("LAGTIME",
-  "MAE", "NSHF", "NSLF"))
+SelectIndices(realisations, Indices, ModelList, ObsIndicesNames)
 }
 \arguments{
 \item{realisations}{table containing at least 2 columns: mid (list of model structures) and pid (parameter sets)}

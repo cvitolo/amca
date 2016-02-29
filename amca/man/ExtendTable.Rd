@@ -4,8 +4,8 @@
 \alias{ExtendTable}
 \title{Extends the table of realisations to include the indices, model building options and parameters.}
 \usage{
-ExtendTable(realisations, ModelList, Indices, parameters,
-  ObsIndicesNames = c("LAGTIME", "MAE", "NSHF", "NSLF"), verbose = TRUE)
+ExtendTable(realisations, ModelList, Indices, parameters, ObsIndicesNames,
+  verbose = TRUE)
 }
 \arguments{
 \item{realisations}{table containing at least 2 columns: mid (list of model structures) and pid (parameter sets)}

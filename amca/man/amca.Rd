@@ -4,13 +4,16 @@
 \alias{amca}
 \title{Run the AMCA algorithm.}
 \usage{
-amca(DATA, ResultsFolder, selectedModels = NULL, warmup = NULL,
-  verbose = TRUE, PreSel = TRUE)
+amca(DATA, ResultsFolder, ObsIndicesNames = c("LAGTIME", "MAE", "NSHF",
+  "NSLF"), selectedModels = NULL, warmup = NULL, verbose = TRUE,
+  PreSel = TRUE)
 }
 \arguments{
 \item{DATA}{This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: P containing precipitation, E containing potential evapotranspiration and Q containing streamflow discharge.}
 
 \item{ResultsFolder}{Path to the folder containing results from MC simulations.}
+
+\item{ObsIndicesNames}{Names of model performance indices.}
 
 \item{selectedModels}{(OPTIONAL) This is a table that contains at list 1 column named \code{mid} (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).}
 

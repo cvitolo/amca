@@ -11,8 +11,7 @@
 #' # SelectIndices(realisations)
 #'
 
-SelectIndices <- function(realisations, Indices, ModelList,
-                          ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF")){
+SelectIndices <- function(realisations, Indices, ModelList, ObsIndicesNames){
 
   colNames <- c(names(realisations), unlist(ObsIndicesNames))
 

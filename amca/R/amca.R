@@ -2,6 +2,7 @@
 #'
 #' @param DATA This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: P containing precipitation, E containing potential evapotranspiration and Q containing streamflow discharge.
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
+#' @param ObsIndicesNames Names of model performance indices.
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named \code{mid} (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Percentage of initial time steps to ignore (default is 0.5 that corresponds to 50 percent of the full length).
 #' @param verbose if set to TRUE it prints running information (default is FALSE).
@@ -14,7 +15,8 @@
 #'
 
 amca <- function(DATA, ResultsFolder,
-                 selectedModels=NULL, warmup=NULL, verbose=TRUE, PreSel=TRUE){
+                 ObsIndicesNames = c("LAGTIME","MAE","NSHF","NSLF"),
+                 selectedModels = NULL, warmup=NULL, verbose=TRUE, PreSel=TRUE){
 
   # For testing:
   # DATA <- readRDS("~/amca/syntheticDATA.rds")
@@ -74,11 +76,11 @@ amca <- function(DATA, ResultsFolder,
   myThreshold <- SetThreshold(ModelList, Indices, verbose=TRUE)
   PreSelReal <- PreSelection(ModelList, Indices, threshold = myThreshold)
 
-  PreSelTable <- SelectIndices(PreSelReal, Indices, ModelList)
+  PreSelTable <- SelectIndices(PreSelReal, Indices, ModelList, ObsIndicesNames)
 
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
-  PF <- ParetoFrontier(PreSelTable)
+  PF <- ParetoFrontier(PreSelTable, ObsIndicesNames)
 
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)

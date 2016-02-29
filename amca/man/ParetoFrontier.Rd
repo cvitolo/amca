@@ -4,8 +4,7 @@
 \alias{ParetoFrontier}
 \title{Generate a table containing only non-dominated realisations based on MPIs and their Pareto Frontier.}
 \usage{
-ParetoFrontier(realisations, ObsIndicesNames = c("LAGTIME", "MAE", "NSHF",
-  "NSLF"))
+ParetoFrontier(realisations, ObsIndicesNames)
 }
 \arguments{
 \item{realisations}{list of model structures to take into account}

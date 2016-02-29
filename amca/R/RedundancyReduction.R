@@ -14,8 +14,7 @@
 #' # RedundancyReduction(ParetoFrontTable,DATA,the.som,parameters,observedQ,deltim,pperiod)
 #'
 RedundancyReduction <- function(ParetoFront, observedQ, ResultsFolder,
-                                ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF"),
-                                verbose=FALSE){
+                                ObsIndicesNames, verbose=FALSE){
 
   # Cluster non-dominated simulations
   # library(som)

@@ -13,9 +13,8 @@
 #' # ExtendTable(PreSel,ModelList,Indices,parameters,ObsIndicesNames)
 #'
 
-ExtendTable <- function(realisations,ModelList,Indices,parameters,
-                        ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF"),
-                        verbose=TRUE){
+ExtendTable <- function(realisations, ModelList, Indices, parameters,
+                        ObsIndicesNames, verbose=TRUE){
 
   colNamesModels <- c("rferr","arch1","arch2","qsurf",
                       "qperc","esoil","qintf","q_tdh")

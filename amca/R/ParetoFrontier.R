@@ -9,8 +9,7 @@
 #' # ParetoFrontier(PreSelTable)
 #'
 
-ParetoFrontier <- function(realisations,
-                           ObsIndicesNames=c("LAGTIME","MAE","NSHF","NSLF")){
+ParetoFrontier <- function(realisations, ObsIndicesNames){
 
   mat <- t(realisations[, ObsIndicesNames])
   mat <- apply(mat, 2, as.numeric)
