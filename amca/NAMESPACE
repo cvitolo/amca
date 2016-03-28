@@ -1,5 +1,7 @@
 import(fuse)
 import(ggplot2)
+importFrom(colorspace, sequential_hcl)
+importFrom(fanplot, fan)
 importFrom(reshape2, melt)
 importFrom(zoo, coredata)
 importFrom(bigmemory, filebacked.big.matrix)

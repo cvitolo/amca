@@ -10,21 +10,21 @@
 #' @param upperP upper probability (e.g. 0.95 means 95th percentile)
 #' @param verbose if set to TRUE it prints running information
 #' @param outputQ if set to TRUE, the funtion also returns the discharges matrix
-#' @param realisations (optional) data frame containing the realisations (columns: "mid" and "pid")
+#' @param bigfile if set to TRUE, the funtion uses the bigmemory package
 #'
-#' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ).
+#' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ), minimum (min) and maximum (max).
 #'
 #' @examples
 #' # BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs)
 #'
 
-BuildEnsemble <- function(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
+BuildEnsemble <- function(observedQ, SimulationFolder,
+                          MIDs = NULL, PIDs = NULL,
                           lowerP = 0.05, upperP = 0.95,
                           verbose = FALSE, outputQ = FALSE,
-                          realisations = NULL) {
+                          bigfile = FALSE) {
 
-  if (length(unique(MIDs)) >= 624 & length(unique(PIDs)) >= 10000 &
-      is.null(realisations)){
+  if (bigfile == TRUE){
 
     ### Build Initial Ensemble using bigmemory/biganalytics ####################
     # library(bigmemory)
@@ -62,8 +62,6 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
 
     A <- matrix(NA, nrow=0, ncol=length(observedQ))
 
-    MIDs <- unique(realisations$mid)
-
     for (mid in MIDs){
 
       if (verbose==TRUE) {
@@ -73,7 +71,7 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
       discharges <- NULL
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
 
-      PIDs <- as.numeric(as.character(realisations$pid[realisations$mid == mid]))
+      PIDs <- PIDs[MIDs == mid]
 
       A <- rbind(A, discharges[PIDs,])
 
@@ -81,12 +79,13 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
 
   }
 
-  lQ <- apply(A, 2, quantile, probs = lowerP)
-  mQ <- apply(A, 2, quantile, probs = 0.50)
-  uQ <- apply(A, 2, quantile, probs = upperP)
-
-  bounds <- data.frame("Dates"= 1:length(lQ), "Qobs"=observedQ,
-                       "lQ" = lQ, "mQ" = mQ, "uQ" = uQ)
+  bounds <- data.frame("Dates"= 1:length(observedQ),
+                       "Qobs" = observedQ,
+                       "lQ"   = apply(A, 2, quantile, probs = lowerP),
+                       "mQ"   = apply(A, 2, quantile, probs = 0.50),
+                       "uQ"   = apply(A, 2, quantile, probs = upperP),
+                       "min"  = apply(A, 2, min, na.rm = TRUE),
+                       "max"  = apply(A, 2, max, na.rm = TRUE))
 
   if (outputQ) {
 
