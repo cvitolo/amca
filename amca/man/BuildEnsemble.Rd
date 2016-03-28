@@ -4,8 +4,9 @@
 \alias{BuildEnsemble}
 \title{Extracts the ensemble bounds from a given a set of realisations.}
 \usage{
-BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs, lowerP = 0.05,
-  upperP = 0.95, verbose = FALSE, outputQ = FALSE)
+BuildEnsemble(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
+  lowerP = 0.05, upperP = 0.95, verbose = FALSE, outputQ = FALSE,
+  realisations = NULL)
 }
 \arguments{
 \item{observedQ}{this is the observed streamflows}
@@ -23,6 +24,8 @@ BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs, lowerP = 0.05,
 \item{verbose}{if set to TRUE it prints running information}
 
 \item{outputQ}{if set to TRUE, the funtion also returns the discharges matrix}
+
+\item{realisations}{(optional) data frame containing the realisations (columns: "mid" and "pid")}
 }
 \value{
 A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ).

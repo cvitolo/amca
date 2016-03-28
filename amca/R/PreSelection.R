@@ -16,7 +16,7 @@
 #'
 
 PreSelection <- function(ModelList, Indices, threshold,
-                        selectM = TRUE, selectP = TRUE, type = "independent"){
+                        selectM = TRUE, selectP = FALSE, type = "independent"){
 
   SelectedMIDs <- ModelList[, "mid"]
   SelectedPIDs <- seq(1:dim(Indices)[1])

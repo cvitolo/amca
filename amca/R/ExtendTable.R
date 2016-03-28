@@ -14,7 +14,7 @@
 #'
 
 ExtendTable <- function(realisations, ModelList, Indices, parameters,
-                        ObsIndicesNames, verbose=TRUE){
+                        ObsIndicesNames, verbose=FALSE){
 
   colNamesModels <- c("rferr","arch1","arch2","qsurf",
                       "qperc","esoil","qintf","q_tdh")

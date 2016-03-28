@@ -4,7 +4,7 @@
 \alias{PreSelection}
 \title{Perform the preliminary selection}
 \usage{
-PreSelection(ModelList, Indices, threshold, selectM = TRUE, selectP = TRUE,
+PreSelection(ModelList, Indices, threshold, selectM = TRUE, selectP = FALSE,
   type = "independent")
 }
 \arguments{

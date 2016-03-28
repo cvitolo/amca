@@ -10,6 +10,7 @@
 #' @param upperP upper probability (e.g. 0.95 means 95th percentile)
 #' @param verbose if set to TRUE it prints running information
 #' @param outputQ if set to TRUE, the funtion also returns the discharges matrix
+#' @param realisations (optional) data frame containing the realisations (columns: "mid" and "pid")
 #'
 #' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ).
 #'
@@ -17,11 +18,13 @@
 #' # BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs)
 #'
 
-BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
+BuildEnsemble <- function(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
                           lowerP = 0.05, upperP = 0.95,
-                          verbose = FALSE, outputQ = FALSE) {
+                          verbose = FALSE, outputQ = FALSE,
+                          realisations = NULL) {
 
-  if (length(MIDs) >= 624 & length(PIDs) >= 10000){
+  if (length(unique(MIDs)) >= 624 & length(unique(PIDs)) >= 10000 &
+      is.null(realisations)){
 
     ### Build Initial Ensemble using bigmemory/biganalytics ####################
     # library(bigmemory)
@@ -59,6 +62,8 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
 
     A <- matrix(NA, nrow=0, ncol=length(observedQ))
 
+    MIDs <- unique(realisations$mid)
+
     for (mid in MIDs){
 
       if (verbose==TRUE) {
@@ -67,7 +72,10 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
 
       discharges <- NULL
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
-      A <- rbind(A,discharges[PIDs,])
+
+      PIDs <- as.numeric(as.character(realisations$pid[realisations$mid == mid]))
+
+      A <- rbind(A, discharges[PIDs,])
 
     }
 
@@ -78,7 +86,7 @@ BuildEnsemble <- function(observedQ, SimulationFolder, MIDs, PIDs,
   uQ <- apply(A, 2, quantile, probs = upperP)
 
   bounds <- data.frame("Dates"= 1:length(lQ), "Qobs"=observedQ,
-                   "lQ"=lQ, "mQ"=mQ, "uQ"=uQ)
+                       "lQ" = lQ, "mQ" = mQ, "uQ" = uQ)
 
   if (outputQ) {
 
