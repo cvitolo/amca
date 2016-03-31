@@ -41,7 +41,7 @@ RedundancyReduction <- function(PF, observedQ, ResultsFolder,
     pid <- PF$pid[i]
 
     if (verbose) {
-      print(paste(i, "out of ", dim(PF)[1], "- MID", mid, "PID", pid))
+      print(paste(i, "out of", dim(PF)[1], "- MID", mid, "PID", pid))
     }
 
     discharges <- NULL
