@@ -4,18 +4,15 @@
 \alias{BuildEnsemble}
 \title{Extracts the ensemble bounds from a given a set of realisations.}
 \usage{
-BuildEnsemble(observedQ, SimulationFolder, MIDs = NULL, PIDs = NULL,
-  lowerP = 0.05, upperP = 0.95, verbose = FALSE, outputQ = FALSE,
-  bigfile = FALSE)
+BuildEnsemble(observedQ, SimulationFolder, realisations, lowerP = 0.05,
+  upperP = 0.95, verbose = FALSE, outputQ = FALSE, bigfile = FALSE)
 }
 \arguments{
 \item{observedQ}{this is the observed streamflows}
 
 \item{SimulationFolder}{path to the folder where simulations are stored}
 
-\item{MIDs}{list of model structures to use}
-
-\item{PIDs}{list of parameter indices to use}
+\item{realisations}{this is a data frame containing the following columns: mid (list of model structures to use) and pid (list of parameter indices to use)}
 
 \item{lowerP}{lower probability (e.g. 0.05 means 5th percentile)}
 
@@ -34,7 +31,7 @@ A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower
 Results are generally divided in multiple files, therefore the function requires the simulations' folder path.
 }
 \examples{
-# BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs)
+# BuildEnsemble(observedQ, SimulationFolder, realisations, verbose = TRUE, outputQ = TRUE)
 
 }
 

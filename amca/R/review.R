@@ -2,6 +2,7 @@
 #'
 #' @param IE Initial Ensemble bounds
 #' @param RE Reduced Ensemble bounds
+#' @param rel reliability is calculated is rel is set to TRUE
 #'
 #' @return Returns accuracy, precision and statistical reliability
 #'
@@ -9,9 +10,23 @@
 #' # review(IE, RE)
 #'
 
-review <- function(IE, RE){
+review <- function(IE, RE, rel = TRUE){
+
+  spreadMax <- mean(IE$maxQ - IE$minQ)
+
+  # Calculate ACCURACY / RELIABILITY (YADAV et al. 2007)
+  indicator1 <- rep(NA,dim(IE)[1])
+  for (t in 1:dim(IE)[1]){
+    indicator1[t] <- ifelse(IE$Qobs[t] <= IE$maxQ[t] &&
+                              IE$Qobs[t] >= IE$minQ[t],1,0)
+  }
+  accuracyIEmax <- round(sum(indicator1)/dim(IE)[1]*100,0)
+  message(paste("Accuracy of initial ensemble = ", accuracyIEmax, "%", sep =""))
+
+  #*****************************************************************************
 
   spread1 <- mean(IE$uQ - IE$lQ)
+  precisionIE <- (spreadMax - spread1)/spreadMax
 
   # Calculate ACCURACY / RELIABILITY (YADAV et al. 2007)
   indicator1 <- rep(NA,dim(IE)[1])
@@ -19,7 +34,8 @@ review <- function(IE, RE){
     indicator1[t] <- ifelse(IE$Qobs[t] <= IE$uQ[t] && IE$Qobs[t] >= IE$lQ[t],1,0)
   }
   accuracyIE <- sum(indicator1)/dim(IE)[1]
-  message(paste("Accuracy of initial ensemble =",round(accuracyIE*100,0), "%"))
+  message(paste("Accuracy of initial ensemble (90%) = ",
+                round(accuracyIE*100,0), "%", sep =""))
 
   #*****************************************************************************
 
@@ -40,17 +56,19 @@ review <- function(IE, RE){
   #*****************************************************************************
 
   # Calculate PRECISION / SHARPNESS
-  precisionRE <- (spread1 - spread2)/spread1
+  precisionRE <- (spreadMax - spread2)/spreadMax
 
   message(paste("Precision of reduced ensemble =",round(precisionRE*100,0),"%"))
 
   #*****************************************************************************
 
-  reliabilityRE <- EnsembleForecast(RE$discharges, IE$Qobs)
-
-  message(paste("Statistical reliability = ",round(reliabilityRE*100,0),"%"))
-
-  return(as.list(c("accuracyIE" = accuracyIE,
+  reliabilityRE <- NULL
+  if (rel) {
+    reliabilityRE <- EnsembleForecast(RE$discharges, IE$Qobs)
+    message(paste("Statistical reliability = ",round(reliabilityRE*100,0),"%"))
+  }
+  return(as.list(c("accuracyIEmax" = accuracyIEmax,
+                   "accuracyIE" = accuracyIE,
                    "accuracyRE" = accuracyRE,
                    "precisionRE" = precisionRE,
                    "reliabilityRE" = reliabilityRE)))

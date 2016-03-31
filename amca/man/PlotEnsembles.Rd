@@ -33,7 +33,7 @@ A plot comparing ensemble distributions.
 Compare 2 distributions percentiles over time.
 }
 \examples{
-# PlotModelSimilarities(ModelList,EnsembleTable)
+# PlotEnsembles(bounds, dischargeTable)
 
 }
 

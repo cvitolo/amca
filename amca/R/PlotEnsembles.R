@@ -15,7 +15,7 @@
 #' @return A plot comparing ensemble distributions.
 #'
 #' @examples
-#' # PlotModelSimilarities(ModelList,EnsembleTable)
+#' # PlotEnsembles(bounds, dischargeTable)
 #'
 
 PlotEnsembles <- function(bounds, dischargeTable,lowerP=5,upperP=95,

@@ -4,8 +4,7 @@
 #'
 #' @param observedQ this is the observed streamflows
 #' @param SimulationFolder path to the folder where simulations are stored
-#' @param MIDs list of model structures to use
-#' @param PIDs list of parameter indices to use
+#' @param realisations this is a data frame containing the following columns: mid (list of model structures to use) and pid (list of parameter indices to use)
 #' @param lowerP lower probability (e.g. 0.05 means 5th percentile)
 #' @param upperP upper probability (e.g. 0.95 means 95th percentile)
 #' @param verbose if set to TRUE it prints running information
@@ -15,11 +14,10 @@
 #' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ), minimum (min) and maximum (max).
 #'
 #' @examples
-#' # BuildEnsemble(observedQ, SimulationFolder, MIDs, PIDs)
+#' # BuildEnsemble(observedQ, SimulationFolder, realisations, verbose = TRUE, outputQ = TRUE)
 #'
 
-BuildEnsemble <- function(observedQ, SimulationFolder,
-                          MIDs = NULL, PIDs = NULL,
+BuildEnsemble <- function(observedQ, SimulationFolder, realisations,
                           lowerP = 0.05, upperP = 0.95,
                           verbose = FALSE, outputQ = FALSE,
                           bigfile = FALSE) {
@@ -62,6 +60,8 @@ BuildEnsemble <- function(observedQ, SimulationFolder,
 
     A <- matrix(NA, nrow=0, ncol=length(observedQ))
 
+    MIDs <- as.numeric(as.character(unique(realisations$mid)))
+
     for (mid in MIDs){
 
       if (verbose==TRUE) {
@@ -71,9 +71,9 @@ BuildEnsemble <- function(observedQ, SimulationFolder,
       discharges <- NULL
       load( paste(SimulationFolder,"/MID_",mid,".Rdata",sep="") )
 
-      PIDs <- PIDs[MIDs == mid]
+      PIDs <- as.character(realisations$pid[realisations$mid == mid])
 
-      A <- rbind(A, discharges[PIDs,])
+      A <- rbind(A, discharges[as.numeric(PIDs),])
 
     }
 
@@ -84,8 +84,8 @@ BuildEnsemble <- function(observedQ, SimulationFolder,
                        "lQ"   = apply(A, 2, quantile, probs = lowerP),
                        "mQ"   = apply(A, 2, quantile, probs = 0.50),
                        "uQ"   = apply(A, 2, quantile, probs = upperP),
-                       "min"  = apply(A, 2, min, na.rm = TRUE),
-                       "max"  = apply(A, 2, max, na.rm = TRUE))
+                       "minQ"  = apply(A, 2, min, na.rm = TRUE),
+                       "maxQ"  = apply(A, 2, max, na.rm = TRUE))
 
   if (outputQ) {
 

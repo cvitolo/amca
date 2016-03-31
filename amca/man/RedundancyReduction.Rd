@@ -4,11 +4,11 @@
 \alias{RedundancyReduction}
 \title{Redundancy reduction process using SOM clustering and Dynamic Time Warping.}
 \usage{
-RedundancyReduction(ParetoFront, observedQ, ResultsFolder, ObsIndicesNames,
+RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames,
   verbose = FALSE)
 }
 \arguments{
-\item{ParetoFront}{Pareto Frontier}
+\item{PF}{Pareto Frontier}
 
 \item{observedQ}{observed discharge (warmup removed)}
 
@@ -28,7 +28,7 @@ Redundancy reduction process using SOM clustering and Dynamic Time Warping.
 This function removes redundant realizations by extracting the realization with the best DTW score from each cluster.
 }
 \examples{
-# RedundancyReduction(ParetoFrontTable,DATA,the.som,parameters,observedQ,deltim,pperiod)
+# RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 
 }
 

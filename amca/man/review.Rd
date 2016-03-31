@@ -4,12 +4,14 @@
 \alias{review}
 \title{Summarise performance coefficients}
 \usage{
-review(IE, RE)
+review(IE, RE, rel = TRUE)
 }
 \arguments{
 \item{IE}{Initial Ensemble bounds}
 
 \item{RE}{Reduced Ensemble bounds}
+
+\item{rel}{reliability is calculated is rel is set to TRUE}
 }
 \value{
 Returns accuracy, precision and statistical reliability

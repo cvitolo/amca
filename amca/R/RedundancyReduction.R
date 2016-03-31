@@ -1,6 +1,6 @@
 #' Redundancy reduction process using SOM clustering and Dynamic Time Warping.
 #'
-#' @param ParetoFront Pareto Frontier
+#' @param PF Pareto Frontier
 #' @param observedQ observed discharge (warmup removed)
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
 #' @param ObsIndicesNames is the list of indices names.
@@ -11,9 +11,9 @@
 #' @details This function removes redundant realizations by extracting the realization with the best DTW score from each cluster.
 #'
 #' @examples
-#' # RedundancyReduction(ParetoFrontTable,DATA,the.som,parameters,observedQ,deltim,pperiod)
+#' # RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 #'
-RedundancyReduction <- function(ParetoFront, observedQ, ResultsFolder,
+RedundancyReduction <- function(PF, observedQ, ResultsFolder,
                                 ObsIndicesNames, verbose=FALSE){
 
   # Cluster non-dominated simulations
