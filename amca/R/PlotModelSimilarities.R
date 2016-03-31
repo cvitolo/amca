@@ -13,7 +13,7 @@
 #' # PlotModelSimilarities(ModelList,results$RETable)
 #'
 
-PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID="",
+PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID=NULL,
                                   plotType="frequency",myTitle="",
                                   modellingOptions=NULL){
 
@@ -26,19 +26,19 @@ PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID="",
 
   if (plotType=="frequency"){
 
-    # changed to
     dfF <- RelativeFrequency(EnsembleTable, modellingOptions)
     dfF$synthetic <- FALSE
-    LabelOptions(SynModel$rferr)
-    SynModel <- ModelList[which(ModelList$mid == synMID),]
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$rferr)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$arch1)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$arch2)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$qsurf)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$qperc)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$esoil)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$qintf)] <- TRUE
-    dfF$synthetic[dfF$Option == LabelOptions(SynModel$q_tdh)] <- TRUE
+    if (!is.null(synMID)){
+      SynModel <- ModelList[which(ModelList$mid == synMID),]
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$rferr)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$arch1)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$arch2)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$qsurf)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$qperc)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$esoil)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$qintf)] <- TRUE
+      dfF$synthetic[dfF$Option == LabelOptions(SynModel$q_tdh)] <- TRUE
+    }
 
     p <- ggplot(dfF, aes(x = factor(Option), y = RelativeFrequency,
                          fill = dfF$synthetic)) +
