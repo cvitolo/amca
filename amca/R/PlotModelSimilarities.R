@@ -40,11 +40,11 @@ PlotModelSimilarities <- function(ModelList,EnsembleTable,synMID=NULL,
       dfF$synthetic[dfF$Option == LabelOptions(SynModel$q_tdh)] <- TRUE
     }
 
-    p <- ggplot(dfF, aes(x = factor(Option), y = RelativeFrequency,
+    p <- ggplot(dfF, aes(x = factor(Option), y = RelativeFrequency*100,
                          fill = dfF$synthetic)) +
       geom_bar(stat = "identity", position = "dodge") +
       facet_grid(~Decision, scales = "free") +
-      xlab("") + ylab("Relative Frequency") +
+      xlab("") + ylab("Relative Frequency (%)") +
       ggtitle(myTitle) + theme_bw() +
       theme(plot.title = element_text(face="bold", size=20),
             axis.text.x = element_text(colour="grey20",size=12,

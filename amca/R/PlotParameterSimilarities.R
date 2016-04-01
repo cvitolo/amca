@@ -46,16 +46,13 @@ PlotParameterSimilarities <- function(RealisationsTable,
 
   i <- 0
   for (col in 1:dim(ParamTable)[2]){
-    print("****************************************")
-    print("")
     print(paste("PARAMETER: ",names(ParamTable)[col],sep=""))
     Pdistr <- as.numeric(as.character(ParamTable[!is.na(ParamTable[,col]),col]))
     if ( length(Pdistr)<6 ) {
       print("Too many NA! This parameter distribution will be discarded.")
       NewParamTable <- NewParamTable[,1:dim(NewParamTable)[2]]
     }else{
-      #print(chisq.test(Pdistr))
-      # print(paste("uniform?",chi2IsUniform(Pdistr)))
+      print(paste("uniform?", ifelse(chisq.test(Pdistr)$p.value < 0.05, T, F)))
       i <- i + 1
       NewParamTable[,i] <- as.numeric(as.character(ParamTable[,col]))
       names(NewParamTable)[i] <- names(ParamTable)[col]
