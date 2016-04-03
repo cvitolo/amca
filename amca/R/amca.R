@@ -103,7 +103,7 @@ amca <- function(DATA, ResultsFolder,
                       minmaxOnly = TRUE)
   # saveRDS(IE, "IEReal.rds")
 
-  reviewCoefficients <- review(IE, T3$discharges)
+  reviewCoefficients <- review(IE, T3)
 
   return(list("IE" = IE, "RE" = RE, "reviewCoefficients" = reviewCoefficients))
 
