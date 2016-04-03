@@ -55,48 +55,55 @@ amca <- function(DATA, ResultsFolder,
   numberOfParamSets <- dim(discharges)[1]
 
   # Build Initial Ensemble of MPIs #############################################
-  Indices <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
-                                 nIndices=4, verbose=TRUE)
+  IndicesRaw <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
+                                    nIndices=length(ObsIndicesNames), verbose)
+  # saveRDS(IndicesRaw, "IndicesRawReal.rds")
 
   ### BUILD ARRAY P ############################################################
-  # Convert Infs and high numbers to NA
-  Indices[is.infinite(Indices)] <- NA
-  Indices[Indices > 1000000] <- NA
-
   # The ObsIndices should all be 0. There is no need to substract the true
   # (observed) indices from the raw one + absolute value.
   # Just calculate the absolute value, then rescale between 0 and 1.
-  # library(scales)
-  Indices[,1,] <- rescale(abs(Indices[,1,]), to=c(0,1))
-  Indices[,2,] <- rescale(abs(Indices[,2,]), to=c(0,1))
-  Indices[,3,] <- rescale(Indices[,3,], to=c(0,1))
-  Indices[,4,] <- rescale(Indices[,4,], to=c(0,1))
+  Indices <- RescaleIndices(IndicesRaw)
+  # saveRDS(Indices, "IndicesReal.rds")
 
   ### PRELIMINARY SELECTION ####################################################
-  myThreshold <- SetThreshold(ModelList, Indices, verbose=TRUE)
-  PreSelReal <- PreSelection(ModelList, Indices, threshold = myThreshold)
+  myThreshold <- SetThreshold(ModelList, Indices, verbose)
+  temp <- PreSelection(ModelList, Indices, threshold = myThreshold)
+  PreSelTable <- ExtendTable(realisations = temp, ModelList = ModelList,
+                             Indices = Indices, parameters = parameters,
+                             ObsIndicesNames = ObsIndicesNames, verbose)
+  # saveRDS(PreSelTable, "PreSelTableReal.rds")
 
-  PreSelTable <- SelectIndices(PreSelReal, Indices, ModelList, ObsIndicesNames)
+  # T1 <- BuildEnsemble(observedQ = DATA$Q[pperiod],
+  #                     SimulationFolder = ResultsFolder,
+  #                     realisations = PreSelTable, verbose, outputQ = FALSE)
+  # saveRDS(T1, "T1Real.rds")
 
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
   PF <- ParetoFrontier(PreSelTable, ObsIndicesNames)
+  # saveRDS(PF, "PFReal.rds")
 
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)
   # library(dtw)
-  REtable <- RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
+  RE <- RedundancyReduction(PF, observedQ, ResultsFolder,
+                            ObsIndicesNames, verbose)
+  # saveRDS(RE, "REReal.rds")
+
+  T3 <- BuildEnsemble(observedQ, ResultsFolder, RE, verbose, outputQ = TRUE)
+  # saveRDS(T3, "T3Real.rds")
 
   # REVIEW #####################################################################
-  IE <- BuildEnsemble(observedQ, ResultsFolder,
-                      ModelList$mid, 1:length(numberOfParamSets),
-                      verbose = TRUE)
+  realisations <- data.frame("mid" = rep(seq(1,1248,2),
+                                         each = numberOfParamSets),
+                             "pid" = rep(1:numberOfParamSets,
+                                         times = length(ModelList$mid)))
+  IE <- BuildEnsemble(observedQ, ResultsFolder, realisations, verbose,
+                      minmaxOnly = TRUE)
+  # saveRDS(IE, "IEReal.rds")
 
-  MIDs <- as.numeric(as.character(REtable$mid))
-  PIDs <- as.numeric(as.character(REtable$pid))
-  RE <- BuildEnsemble(observedQ, ResultsFolder, MIDs, PIDs, outputQ = TRUE)
-
-  reviewCoefficients <- review(IE, RE)
+  reviewCoefficients <- review(IE, T3$discharges)
 
   return(list("IE" = IE, "RE" = RE, "reviewCoefficients" = reviewCoefficients))
 
