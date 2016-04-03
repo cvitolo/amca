@@ -24,7 +24,10 @@ amca <- function(DATA, ResultsFolder,
   # selectedModels <- seq(1,1248,2)
   # warmup=NULL; verbose=TRUE; PreSel=TRUE
 
+  ##############################################################################
   # Preparing forcing inputs ###################################################
+  ##############################################################################
+
   options(warn=-1) # do not print warnings
 
   if ( is.null(ResultsFolder) ) {
@@ -53,36 +56,96 @@ amca <- function(DATA, ResultsFolder,
   discharges <- NULL
   load(paste(ResultsFolder, dir(ResultsFolder)[1], sep=""))
   numberOfParamSets <- dim(discharges)[1]
+  rm(indices, discharges)
+
+  # Make a table with all the combinations of models and params
+  ALLrealisations <- data.frame("mid" = rep(seq(1,1248,2),
+                                            each = numberOfParamSets),
+                                "pid" = rep(1:numberOfParamSets,
+                                            times = length(ModelList$mid)))
+
+  IE <- BuildEnsemble(observedQ = observedQ,
+                      SimulationFolder = ResultsFolder,
+                      realisations = ALLrealisations,
+                      lowerP = 0.05, upperP = 0.95, # These are ignored
+                      verbose = verbose,
+                      outputQ = FALSE, bigfile = FALSE, # These are ignored
+                      minmaxOnly = TRUE)
+  # saveRDS(IE, "IEReal.rds")
+  # IE <- readRDS("IEReal.rds")
+
+  accuracyIEminmax <- accuracy(Qobs = observedQ,
+                               lowerBound = IE$minQ,
+                               upperBound = IE$maxQ)
+
+  message(paste("Accuracy IE max and min bounds =", accuracyIEminmax))
 
   # Build Initial Ensemble of MPIs #############################################
   IndicesRaw <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
                                     nIndices=length(ObsIndicesNames), verbose)
   # saveRDS(IndicesRaw, "IndicesRawReal.rds")
+  # IndicesRaw <- readRDS("IndicesRawReal.rds")
 
   ### BUILD ARRAY P ############################################################
   # The ObsIndices should all be 0. There is no need to substract the true
   # (observed) indices from the raw one + absolute value.
   # Just calculate the absolute value, then rescale between 0 and 1.
   Indices <- RescaleIndices(IndicesRaw)
+  rm(IndicesRaw)
   # saveRDS(Indices, "IndicesReal.rds")
+  # Indices <- readRDS("IndicesReal.rds")
 
   ### PRELIMINARY SELECTION ####################################################
-  myThreshold <- SetThreshold(ModelList, Indices, verbose)
-  temp <- PreSelection(ModelList, Indices, threshold = myThreshold)
-  PreSelTable <- ExtendTable(realisations = temp, ModelList = ModelList,
-                             Indices = Indices, parameters = parameters,
-                             ObsIndicesNames = ObsIndicesNames, verbose)
+  if (PreSel == TRUE){
+
+    myThreshold <- SetThreshold(ModelList, Indices, verbose)
+    temp <- PreSelection(ModelList, Indices, threshold = myThreshold)
+    PreSelTable <- ExtendTable(realisations = temp, ModelList = ModelList,
+                               Indices = Indices, parameters = parameters,
+                               ObsIndicesNames = ObsIndicesNames, verbose)
+
+  }else{
+
+    PreSelTable <- ExtendTable(realisations = ALLrealisations,
+                               ModelList = ModelList,
+                               Indices = Indices, parameters = parameters,
+                               ObsIndicesNames = ObsIndicesNames, verbose)
+
+  }
+
   # saveRDS(PreSelTable, "PreSelTableReal.rds")
 
-  # T1 <- BuildEnsemble(observedQ = DATA$Q[pperiod],
+  # PreSelTable <- readRDS("PreSelTableReal.rds")
+  # T1 <- BuildEnsemble(observedQ = observedQ,
   #                     SimulationFolder = ResultsFolder,
-  #                     realisations = PreSelTable, verbose, outputQ = FALSE)
+  #                     realisations = PreSelTable,
+  #                     lowerP = 0.05, upperP = 0.95,
+  #                     verbose = verbose, outputQ = TRUE,
+  #                     bigfile = FALSE, minmaxOnly = FALSE)
   # saveRDS(T1, "T1Real.rds")
+  # T1 <- readRDS("T1Real.rds")
+  # accuracy(Qobs=observedQ, lowerBound=T1$bounds$lQ, upperBound=T1$bounds$uQ)
+  # precision(lowerBound1 = IE$minQ, upperBound1 = IE$maxQ,
+  #           lowerBound2 = T1$bounds$lQ, upperBound2 = T1$bounds$uQ)
 
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
+  # The pareto frontier is only applied to the indices
   PF <- ParetoFrontier(PreSelTable, ObsIndicesNames)
   # saveRDS(PF, "PFReal.rds")
+
+  # PF <- readRDS("PFReal.rds")
+  # T2 <- BuildEnsemble(observedQ = observedQ,
+  #                     SimulationFolder = ResultsFolder,
+  #                     realisations = PF,
+  #                     lowerP = 0.05, upperP = 0.95,
+  #                     verbose = verbose, outputQ = TRUE,
+  #                     bigfile = FALSE, minmaxOnly = FALSE)
+  # saveRDS(T2, "T2Real.rds")
+  # T2 <- readRDS("T2Real.rds")
+  # accuracy(Qobs=observedQ, lowerBound=T2$bounds$lQ, upperBound=T2$bounds$uQ)
+  # precision(lowerBound1 = IE$minQ, upperBound1 = IE$maxQ,
+  #           lowerBound2 = T2$bounds$lQ, upperBound2 = T2$bounds$uQ)
 
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)
@@ -91,19 +154,28 @@ amca <- function(DATA, ResultsFolder,
                             ObsIndicesNames, verbose)
   # saveRDS(RE, "REReal.rds")
 
-  T3 <- BuildEnsemble(observedQ, ResultsFolder, RE, verbose, outputQ = TRUE)
+  # RE <- readRDS("REReal.rds")
+  T3 <- BuildEnsemble(observedQ = observedQ,
+                      SimulationFolder = ResultsFolder,
+                      realisations = RE,
+                      lowerP = 0.05, upperP = 0.95,
+                      verbose = verbose, outputQ = TRUE,
+                      bigfile = FALSE, minmaxOnly = FALSE)
   # saveRDS(T3, "T3Real.rds")
+  # T3 <- readRDS("T3Real.rds")
+  accuracyRE <- accuracy(Qobs=observedQ,
+                         lowerBound=T3$bounds$lQ, upperBound=T3$bounds$uQ)
+  precisionRE <- precision(lowerBound1 = IE$minQ,
+                           upperBound1 = IE$maxQ,
+                           lowerBound2 = T3$bounds$lQ,
+                           upperBound2 = T3$bounds$uQ)
 
   # REVIEW #####################################################################
-  realisations <- data.frame("mid" = rep(seq(1,1248,2),
-                                         each = numberOfParamSets),
-                             "pid" = rep(1:numberOfParamSets,
-                                         times = length(ModelList$mid)))
-  IE <- BuildEnsemble(observedQ, ResultsFolder, realisations, verbose,
-                      minmaxOnly = TRUE)
-  # saveRDS(IE, "IEReal.rds")
+  # RE's STATISTICAL RELIABILITY
+  reliabilityRE <- reliability(T3$discharges, IE$Qobs)
 
-  reviewCoefficients <- review(IE, T3)
+  # RE's probabilistic NS
+  REpNS <- pNS(observedQ, T3$discharges)
 
   return(list("IE" = IE, "RE" = RE, "reviewCoefficients" = reviewCoefficients))
 

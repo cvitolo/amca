@@ -31,9 +31,11 @@ BuildEnsemble <- function(observedQ, SimulationFolder, realisations,
     Amax <- matrix(NA, nrow=length(MIDs), ncol=length(observedQ))
     i <- 1
     for (mid in MIDs){
-      if (verbose == TRUE) {
-        print(mid)
+
+      if (verbose==TRUE) {
+        print(paste("FUN: BuildEnsemble - Opening MID ", mid, sep=""))
       }
+
       load(paste(SimulationFolder, "MID_", mid, ".Rdata", sep=""))
       Amin[i,] <- apply(discharges, 2, min, na.rm = TRUE)
       Amax[i,] <- apply(discharges, 2, max, na.rm = TRUE)

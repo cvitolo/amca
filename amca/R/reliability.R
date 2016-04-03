@@ -5,13 +5,13 @@
 #' @param warmupDTW additional warmup period (optional)
 #' @param verbose if set to TRUE it prints running information
 #'
-#' @return A plot with QQ plots and results of statistical tests
+#' @return A plot with QQ plots and results of statistical reliability tests
 #'
 #' @examples
-#' # EnsembleForecast(predDTW,observed,warmupDTW=0,verbose=FALSE)
+#' # reliability(predDTW,observed,warmupDTW=0,verbose=FALSE)
 #'
 
-EnsembleForecast <- function(simulated,observed,warmupDTW=0,verbose=FALSE){
+reliability <- function(simulated,observed,warmupDTW=0,verbose=FALSE){
 
   observed <- observed[(warmupDTW+1):length(observed)]
   simulated <- simulated[,(warmupDTW+1):dim(simulated)[2]]
@@ -68,6 +68,6 @@ EnsembleForecast <- function(simulated,observed,warmupDTW=0,verbose=FALSE){
     text(0.50,0.0, paste("Renard's \U03B1","=",reliability_alfa,sep=" "), cex = .8, adj = c(0,0))
   }
 
-  return(reliability_alfa)
+  return(round(reliability_alfa*100, 0))
 
 }
