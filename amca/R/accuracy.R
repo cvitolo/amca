@@ -2,7 +2,7 @@
 #'
 #' @description Accuracy definition available in Yadav et al. (2007)
 #'
-#' @param Obs vector containing the observed flow
+#' @param Qobs vector containing the observed flow
 #' @param lowerBound vector containing the minimum or the lower quantile bound
 #' @param upperBound vector containing the maximum or the upper quantile bound
 #'
@@ -20,7 +20,7 @@ accuracy <- function(Qobs, lowerBound, upperBound){
     indicator1[t] <- ifelse(Qobs[t] <= upperBound[t] &&
                             Qobs[t] >= lowerBound[t],1,0)
   }
-  accuracyRE <- round(sum(indicator1)/dim(IE)[1]*100,0)
+  accuracyRE <- round(sum(indicator1)/length(Qobs)*100,0)
 
   return(accuracyRE)
 

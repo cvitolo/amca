@@ -10,6 +10,7 @@
 #' @param verbose if set to TRUE it prints running information
 #' @param outputQ if set to TRUE, the funtion also returns the discharges matrix
 #' @param bigfile if set to TRUE, the funtion uses the bigmemory package
+#' @param minmaxOnly if set to TRUE, the funtion calculate the bounds as min and max.
 #'
 #' @return A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ), minimum (min) and maximum (max).
 #'

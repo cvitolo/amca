@@ -4,8 +4,8 @@
 #'
 #' @param lowerBound1 vector containing the minimum or the lower quantile bound for the first ensemble
 #' @param upperBound1 vector containing the maximum or the upper quantile bound for the first ensemble
-#' @param lowerBound vector containing the minimum or the lower quantile bound for the second ensemble
-#' @param upperBound vector containing the maximum or the upper quantile bound for the second ensemble
+#' @param lowerBound2 vector containing the minimum or the lower quantile bound for the second ensemble
+#' @param upperBound2 vector containing the maximum or the upper quantile bound for the second ensemble
 #'
 #' @return Returns precision, in the range [0,100], percentage of closeness to a line.
 #'

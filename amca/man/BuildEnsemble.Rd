@@ -5,7 +5,8 @@
 \title{Extracts the ensemble bounds from a given a set of realisations.}
 \usage{
 BuildEnsemble(observedQ, SimulationFolder, realisations, lowerP = 0.05,
-  upperP = 0.95, verbose = FALSE, outputQ = FALSE, bigfile = FALSE)
+  upperP = 0.95, verbose = FALSE, outputQ = FALSE, bigfile = FALSE,
+  minmaxOnly = FALSE)
 }
 \arguments{
 \item{observedQ}{this is the observed streamflows}
@@ -23,6 +24,8 @@ BuildEnsemble(observedQ, SimulationFolder, realisations, lowerP = 0.05,
 \item{outputQ}{if set to TRUE, the funtion also returns the discharges matrix}
 
 \item{bigfile}{if set to TRUE, the funtion uses the bigmemory package}
+
+\item{minmaxOnly}{if set to TRUE, the funtion calculate the bounds as min and max.}
 }
 \value{
 A data.frame with 6 columns: date&time (Dates), observed discharge (Qobs), lower bound (lQ), median (mQ), upper bound (uQ), minimum (min) and maximum (max).
