@@ -6,7 +6,7 @@
 \usage{
 amca(DATA, ResultsFolder, parameters, ObsIndicesNames = c("LAGTIME", "MAE",
   "NSHF", "NSLF"), selectedModels = NULL, warmup = NULL, verbose = TRUE,
-  PreSel = TRUE)
+  PreSel = FALSE)
 }
 \arguments{
 \item{DATA}{This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: P containing precipitation, E containing potential evapotranspiration and Q containing streamflow discharge.}
@@ -23,7 +23,7 @@ amca(DATA, ResultsFolder, parameters, ObsIndicesNames = c("LAGTIME", "MAE",
 
 \item{verbose}{if set to TRUE it prints running information (default is FALSE).}
 
-\item{PreSel}{if set to FALSE the preliminary selection step is skipped (default is TRUE).}
+\item{PreSel}{if set to FALSE the preliminary selection step is skipped.}
 }
 \value{
 A list of suggested model configurations.

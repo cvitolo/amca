@@ -6,6 +6,7 @@
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
 #' @param ObsIndicesNames this is the list of model performance indices calculated from observations.
 #' @param verbose if set to TRUE it prints running information
+#' @param onlyIndices if set to TRUE to extends the table of realisations only with indices.
 #'
 #' @return Extended data.frame
 #'
@@ -14,67 +15,97 @@
 #'
 
 ExtendTable <- function(realisations, ModelList, Indices, parameters,
-                        ObsIndicesNames, verbose=FALSE){
+                        ObsIndicesNames, verbose=FALSE, onlyIndices = FALSE){
 
-  colNamesModels <- c("rferr","arch1","arch2","qsurf",
-                      "qperc","esoil","qintf","q_tdh")
+  if (onlyIndices == TRUE){
 
-  colNames <- c(names(realisations),
-                ObsIndicesNames,
-                colNamesModels,
-                names(parameters))
+    colNames <- c(names(realisations), ObsIndicesNames)
+    tableX <- matrix(NA, ncol=length(colNames), nrow=dim(realisations)[1])
+    tableX[,1:dim(realisations)[2]] <- as.matrix(realisations)
+    MIDs <- as.numeric(as.character(unique(realisations$mid)))
+    PIDs <- as.numeric(as.character(unique(realisations$pid)))
 
-  tableX <- matrix(NA, ncol=length(colNames), nrow=dim(realisations)[1])
+    for (mid in MIDs) {
 
-  tableX[,1:dim(realisations)[2]] <- as.matrix(realisations)
+      if (verbose == TRUE) {
+        print( paste("FUN: ExtendTable - MID",mid,
+                     "out of",max(as.numeric(as.character(MIDs)))) )
+      }
 
-  MIDs <- as.numeric(as.character(unique(realisations$mid)))
+      rows <- which(tableX[,which(colNames=="mid")]==mid)
+      counterMID <- which(ModelList$mid %in% mid)
+      colsMod <- which(colNames %in% ObsIndicesNames)
+      counterPIDs <- as.numeric(tableX[rows,which(colNames=="pid")])
+      tableX[rows,colsMod] <- Indices[counterPIDs,,counterMID]
 
-  PIDs <- as.numeric(as.character(unique(realisations$pid)))
-
-  colsPar <- which(colNames %in% names(parameters))
-
-  for (pid in PIDs) {
-
-    if (verbose == TRUE) {
-      print( paste("FUN: ExtendTable - PID",pid,
-                   "out of",max(as.numeric(as.character(PIDs)))) )
     }
 
-    rows <- which(tableX[,which(colNames=="pid")]==pid)
+    tableX <- data.frame(tableX)
+    names(tableX) <- colNames
 
-    tableX[rows,colsPar] <- t(matrix(as.numeric(parameters[pid,]),
-                                     nrow=length(colsPar), ncol=length(rows)))
+  }else{
 
-  }
+    colNamesModels <- c("rferr","arch1","arch2","qsurf",
+                        "qperc","esoil","qintf","q_tdh")
 
-  for (mid in MIDs) {
+    colNames <- c(names(realisations),
+                  ObsIndicesNames,
+                  colNamesModels,
+                  names(parameters))
 
-    if (verbose == TRUE) {
-      print( paste("FUN: ExtendTable - MID",mid,
-                   "out of",max(as.numeric(as.character(MIDs)))) )
+    tableX <- matrix(NA, ncol=length(colNames), nrow=dim(realisations)[1])
+
+    tableX[,1:dim(realisations)[2]] <- as.matrix(realisations)
+
+    MIDs <- as.numeric(as.character(unique(realisations$mid)))
+
+    PIDs <- as.numeric(as.character(unique(realisations$pid)))
+
+    colsPar <- which(colNames %in% names(parameters))
+
+    for (pid in PIDs) {
+
+      if (verbose == TRUE) {
+        print( paste("FUN: ExtendTable - PID",pid,
+                     "out of",max(as.numeric(as.character(PIDs)))) )
+      }
+
+      rows <- which(tableX[,which(colNames=="pid")]==pid)
+
+      tableX[rows,colsPar] <- t(matrix(as.numeric(parameters[pid,]),
+                                       nrow=length(colsPar), ncol=length(rows)))
+
     }
 
-    rows <- which(tableX[,which(colNames=="mid")]==mid)
-    counterMID <- which(ModelList$mid %in% mid)
-    colsMod <- which(colNames %in% colNamesModels)
-    tableX[rows,colsMod] <- t(matrix(as.numeric(ModelList[counterMID,
-                                                          colNamesModels]),
-                                     nrow=length(colsMod),ncol=length(rows)))
+    for (mid in MIDs) {
 
-    colsMod <- which(colNames %in% ObsIndicesNames)
-    counterPIDs <- as.numeric(tableX[rows,which(colNames=="pid")])
-    tableX[rows,colsMod] <- Indices[counterPIDs,,counterMID]
+      if (verbose == TRUE) {
+        print( paste("FUN: ExtendTable - MID",mid,
+                     "out of",max(as.numeric(as.character(MIDs)))) )
+      }
 
-    colsParNA <- which(is.na(ModelList[which(ModelList$mid==mid),
-                                       names(parameters)]))
-    startCol <- which(colNames %in% names(parameters)[1]) - 1
-    tableX[rows,startCol+colsParNA] <- NA
+      rows <- which(tableX[,which(colNames=="mid")]==mid)
+      counterMID <- which(ModelList$mid %in% mid)
+      colsMod <- which(colNames %in% colNamesModels)
+      tableX[rows,colsMod] <- t(matrix(as.numeric(ModelList[counterMID,
+                                                            colNamesModels]),
+                                       nrow=length(colsMod),ncol=length(rows)))
+
+      colsMod <- which(colNames %in% ObsIndicesNames)
+      counterPIDs <- as.numeric(tableX[rows,which(colNames=="pid")])
+      tableX[rows,colsMod] <- Indices[counterPIDs,,counterMID]
+
+      colsParNA <- which(is.na(ModelList[which(ModelList$mid==mid),
+                                         names(parameters)]))
+      startCol <- which(colNames %in% names(parameters)[1]) - 1
+      tableX[rows,startCol+colsParNA] <- NA
+
+    }
+
+    tableX <- data.frame(tableX)
+    names(tableX) <- colNames
 
   }
-
-  tableX <- data.frame(tableX)
-  names(tableX) <- colNames
 
   return(tableX)
 

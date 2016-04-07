@@ -5,7 +5,7 @@
 \title{Extends the table of realisations to include the indices, model building options and parameters.}
 \usage{
 ExtendTable(realisations, ModelList, Indices, parameters, ObsIndicesNames,
-  verbose = FALSE)
+  verbose = FALSE, onlyIndices = FALSE)
 }
 \arguments{
 \item{realisations}{table containing at least 2 columns: mid (list of model structures) and pid (parameter sets)}
@@ -19,6 +19,8 @@ ExtendTable(realisations, ModelList, Indices, parameters, ObsIndicesNames,
 \item{ObsIndicesNames}{this is the list of model performance indices calculated from observations.}
 
 \item{verbose}{if set to TRUE it prints running information}
+
+\item{onlyIndices}{if set to TRUE to extends the table of realisations only with indices.}
 }
 \value{
 Extended data.frame

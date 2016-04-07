@@ -7,7 +7,7 @@
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named \code{mid} (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Percentage of initial time steps to ignore (default is 0.5 that corresponds to 50 percent of the full length).
 #' @param verbose if set to TRUE it prints running information (default is FALSE).
-#' @param PreSel if set to FALSE the preliminary selection step is skipped (default is TRUE).
+#' @param PreSel if set to FALSE the preliminary selection step is skipped.
 #'
 #' @return A list of suggested model configurations.
 #'
@@ -17,13 +17,8 @@
 
 amca <- function(DATA, ResultsFolder, parameters,
                  ObsIndicesNames = c("LAGTIME","MAE","NSHF","NSLF"),
-                 selectedModels = NULL, warmup=NULL, verbose=TRUE, PreSel=TRUE){
-
-  # For testing:
-  # DATA <- readRDS("~/amca/syntheticDATA.rds")
-  # ResultsFolder <- "~/amca/synthetic/"
-  # selectedModels <- seq(1,1248,2)
-  # warmup=NULL; verbose=TRUE; PreSel=TRUE
+                 selectedModels = NULL, warmup=NULL,
+                 verbose=TRUE, PreSel=FALSE){
 
   ##############################################################################
   # Preparing forcing inputs ###################################################
@@ -83,10 +78,7 @@ amca <- function(DATA, ResultsFolder, parameters,
   # Build Initial Ensemble of MPIs #############################################
   IndicesRaw <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
                                     nIndices=length(ObsIndicesNames), verbose)
-  # saveRDS(IndicesRaw, "IndicesRawReal.rds")
-  # IndicesRaw <- readRDS("IndicesRawReal.rds")
 
-  ### BUILD ARRAY P ############################################################
   # The ObsIndices should all be 0. There is no need to substract the true
   # (observed) indices from the raw one + absolute value.
   # Just calculate the absolute value, then rescale between 0 and 1.
@@ -100,21 +92,20 @@ amca <- function(DATA, ResultsFolder, parameters,
 
     myThreshold <- SetThreshold(ModelList, Indices, verbose)
     temp <- PreSelection(ModelList, Indices, threshold = myThreshold)
-    PS <- ExtendTable(realisations = temp, ModelList = ModelList,
-                      Indices = Indices, parameters = parameters,
-                      ObsIndicesNames = ObsIndicesNames, verbose)
 
   }else{
 
-    PS <- ExtendTable(realisations = ALLrealisations,
-                      ModelList = ModelList,
-                      Indices = Indices, parameters = parameters,
-                      ObsIndicesNames = ObsIndicesNames, verbose)
+    temp <- ALLrealisations
 
   }
 
-  # saveRDS(PS, "PSReal.rds")
+  PS <- ExtendTable(realisations = temp,
+                    ModelList = ModelList,
+                    Indices = Indices, parameters = parameters,
+                    ObsIndicesNames = ObsIndicesNames,
+                    verbose, onlyIndices = TRUE)
 
+  # saveRDS(PS, "PSReal.rds")
   # PS <- readRDS("PSReal.rds")
   # T1 <- BuildEnsemble(observedQ = observedQ,
   #                     SimulationFolder = ResultsFolder,
