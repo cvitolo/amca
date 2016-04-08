@@ -70,7 +70,7 @@ RedundancyReduction <- function(PF, observedQ, ResultsFolder,
     rows <- which(PF[,"ClusterX"] == uniqueClusters[clusternumber,"ClusterX"] &
                     PF[,"ClusterY"] == uniqueClusters[clusternumber,"ClusterY"])
 
-    allRows <- c(allRows, which(PF$dtw_score==min(PF$dtw_score[rows])) )
+    allRows <- c(allRows, rows[which.min(PF$dtw_score[rows])] )
 
   }
 
