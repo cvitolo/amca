@@ -66,14 +66,14 @@ amca <- function(DATA, ResultsFolder, parameters,
                       verbose = verbose,
                       outputQ = FALSE, bigfile = FALSE, # These are ignored
                       minmaxOnly = TRUE)
-  # saveRDS(IE, "IEReal.rds")
-  # IE <- readRDS("IEReal.rds")
 
   accuracyIEminmax <- accuracy(Qobs = observedQ,
                                lowerBound = IE$minQ,
                                upperBound = IE$maxQ)
 
-  message(paste("Accuracy IE max and min bounds =", accuracyIEminmax))
+  message(paste("Accuracy IE max and min bounds = ",
+                accuracyIEminmax, "%", sep = ""))
+  message("Precision IE max and min bounds = 0% (by definition)")
 
   # Build Initial Ensemble of MPIs #############################################
   IndicesRaw <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
@@ -83,9 +83,6 @@ amca <- function(DATA, ResultsFolder, parameters,
   # (observed) indices from the raw one + absolute value.
   # Just calculate the absolute value, then rescale between 0 and 1.
   Indices <- RescaleIndices(IndicesRaw)
-  rm(IndicesRaw)
-  # saveRDS(Indices, "IndicesReal.rds")
-  # Indices <- readRDS("IndicesReal.rds")
 
   ### PRELIMINARY SELECTION ####################################################
   if (PreSel == TRUE){
@@ -105,71 +102,42 @@ amca <- function(DATA, ResultsFolder, parameters,
                     ObsIndicesNames = ObsIndicesNames,
                     verbose, onlyIndices = TRUE)
 
-  # saveRDS(PS, "PSReal.rds")
-  # PS <- readRDS("PSReal.rds")
-  # T1 <- BuildEnsemble(observedQ = observedQ,
-  #                     SimulationFolder = ResultsFolder,
-  #                     realisations = PS,
-  #                     lowerP = 0.05, upperP = 0.95,
-  #                     verbose = verbose, outputQ = TRUE,
-  #                     bigfile = FALSE, minmaxOnly = FALSE)
-  # saveRDS(T1, "T1Real.rds")
-  # T1 <- readRDS("T1Real.rds")
-  # accuracy(Qobs=observedQ, lowerBound=T1$bounds$lQ, upperBound=T1$bounds$uQ)
-  # precision(lowerBound1 = IE$minQ, upperBound1 = IE$maxQ,
-  #           lowerBound2 = T1$bounds$lQ, upperBound2 = T1$bounds$uQ)
-
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
   # The pareto frontier is only applied to the indices
   PF <- ParetoFrontier(PS, ObsIndicesNames)
-  # saveRDS(PF, "PFReal.rds")
-
-  # PF <- readRDS("PFReal.rds")
-  # T2 <- BuildEnsemble(observedQ = observedQ,
-  #                     SimulationFolder = ResultsFolder,
-  #                     realisations = PF,
-  #                     lowerP = 0.05, upperP = 0.95,
-  #                     verbose = verbose, outputQ = TRUE,
-  #                     bigfile = FALSE, minmaxOnly = FALSE)
-  # saveRDS(T2, "T2Real.rds")
-  # T2 <- readRDS("T2Real.rds")
-  # accuracy(Qobs=observedQ, lowerBound=T2$bounds$lQ, upperBound=T2$bounds$uQ)
-  # precision(lowerBound1 = IE$minQ, upperBound1 = IE$maxQ,
-  #           lowerBound2 = T2$bounds$lQ, upperBound2 = T2$bounds$uQ)
 
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)
   # library(dtw)
   RE <- RedundancyReduction(PF, observedQ, ResultsFolder,
                             ObsIndicesNames, verbose)
-  # saveRDS(RE, "REReal.rds")
 
-  # RE <- readRDS("REReal.rds")
   T3 <- BuildEnsemble(observedQ = observedQ,
                       SimulationFolder = ResultsFolder,
                       realisations = RE,
                       lowerP = 0.05, upperP = 0.95,
                       verbose = verbose, outputQ = TRUE,
                       bigfile = FALSE, minmaxOnly = FALSE)
-  # saveRDS(T3, "T3Real.rds")
-  # T3 <- readRDS("T3Real.rds")
+
+  # REVIEW #####################################################################
+  # RE's ACCURACY
   accuracyRE <- accuracy(Qobs=observedQ,
                          lowerBound=T3$bounds$lQ, upperBound=T3$bounds$uQ)
+
+  # RE's PRECISION
   precisionRE <- precision(lowerBound1 = IE$minQ,
                            upperBound1 = IE$maxQ,
                            lowerBound2 = T3$bounds$lQ,
                            upperBound2 = T3$bounds$uQ)
 
-  # REVIEW #####################################################################
   # RE's STATISTICAL RELIABILITY
   reliabilityRE <- reliability(T3$discharges, IE$Qobs)
 
-  # RE's probabilistic NS
-  pNSRE <- pNS(observedQ, T3$discharges)
+  message(paste("Accuracy RR (90% P.I.) = ", accuracyRE, "%", sep = ""))
+  message(paste("Precision RR (90% P.I.) = ", precisionRE, "%", sep = ""))
+  message(paste("Reliability RR (90% P.I.) = ", reliabilityRE, "%", sep = ""))
 
-  return(list("IE" = IE, "PS" = PS, "PF" = PF, "RE" = RE,
-              "accuracyRE" = accuracyRE, "precisionRE" = precisionRE,
-              "reliabilityRE" = reliabilityRE, "pNSRE" = pNSRE))
+  return(list("PS" = PS, "PF" = PF, "RE" = RE))
 
 }
