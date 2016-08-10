@@ -4,13 +4,17 @@
 \alias{RedundancyReduction}
 \title{Redundancy reduction process using SOM clustering and Dynamic Time Warping.}
 \usage{
-RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames,
-  verbose = FALSE)
+RedundancyReduction(PF, observedQ, parameters, deltim, ResultsFolder,
+  ObsIndicesNames, verbose = FALSE)
 }
 \arguments{
 \item{PF}{Pareto Frontier}
 
 \item{observedQ}{observed discharge (warmup removed)}
+
+\item{parameters}{This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.}
+
+\item{deltim}{time step for FUSE simulations}
 
 \item{ResultsFolder}{Path to the folder containing results from MC simulations.}
 

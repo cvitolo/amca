@@ -7,7 +7,7 @@
 #' @param selectedModels (OPTIONAL) This is a table that contains at list 1 column named \code{mid} (list of model structures). Other informations can be added as additional columns but will be ignored (default = NULL).
 #' @param warmup Percentage of initial time steps to ignore (default is 0.5 that corresponds to 50 percent of the full length).
 #' @param verbose if set to TRUE it prints running information (default is FALSE).
-#' @param PreSel if set to FALSE the preliminary selection step is skipped.
+#' @param deltim time step for FUSE simulations
 #'
 #' @return A list of suggested model configurations.
 #'
@@ -17,8 +17,7 @@
 
 amca <- function(DATA, ResultsFolder, parameters,
                  ObsIndicesNames = c("LAGTIME","MAE","NSHF","NSLF"),
-                 selectedModels = NULL, warmup=NULL,
-                 verbose=TRUE, PreSel=FALSE){
+                 selectedModels = NULL, warmup=NULL, verbose=TRUE, deltim = 1){
 
   ##############################################################################
   # Preparing forcing inputs ###################################################
@@ -44,17 +43,15 @@ amca <- function(DATA, ResultsFolder, parameters,
 
   # load list of availabe models
   ModelList <- PrepareTable()
-  if (!is.null(selectedModels)) {
+  if ( !is.null(selectedModels) ) {
     ModelList <- ModelList[which(ModelList$mid %in% selectedModels),]
   }
 
-  # Find out how many parameter sets were used by looking at the first output
-  discharges <- NULL
-  load(paste(ResultsFolder, dir(ResultsFolder)[1], sep=""))
-  numberOfParamSets <- dim(discharges)[1]
+  # Find out how many parameter sets were used
+  numberOfParamSets <- dim(parameters)[1]
 
-  # Make a table with all the combinations of models and params
-  ALLrealisations <- data.frame("mid" = rep(seq(1,1248,2),
+  # Make a table with models and params identification numbers
+  ALLrealisations <- data.frame("mid" = rep(ModelList$mid,
                                             each = numberOfParamSets),
                                 "pid" = rep(1:numberOfParamSets,
                                             times = length(ModelList$mid)))
@@ -75,28 +72,29 @@ amca <- function(DATA, ResultsFolder, parameters,
                 accuracyIEminmax, "%", sep = ""))
   message("Precision IE max and min bounds = 0% (by definition)")
 
+  # Initial screening tests ####################################################
+
+  # Is the rainfall error ignored?
+  if ( all(parameters$rferr_add == 0) & all(parameters$rferr_mlt == 1) ) {
+    ModelList <- ModelList[ModelList$rferr == 11,]
+  }
+
+  # Should the routing be ignored?
+  if ( all(parameters$timedelay == 0) ) {
+    ModelList <- ModelList[ModelList$q_tdh == 81,]
+  }
+
   # Build Initial Ensemble of MPIs #############################################
   IndicesRaw <- Simulations2Indices(ModelList, ResultsFolder, numberOfParamSets,
-                                    nIndices=length(ObsIndicesNames), verbose)
+                                    nIndices=length(ObsIndicesNames),
+                                    verbose, string = "indicesTraining")
 
   # The ObsIndices should all be 0. There is no need to substract the true
   # (observed) indices from the raw one + absolute value.
   # Just calculate the absolute value, then rescale between 0 and 1.
   Indices <- RescaleIndices(IndicesRaw)
 
-  ### PRELIMINARY SELECTION ####################################################
-  if (PreSel == TRUE){
-
-    myThreshold <- SetThreshold(ModelList, Indices, verbose)
-    temp <- PreSelection(ModelList, Indices, threshold = myThreshold)
-
-  }else{
-
-    temp <- ALLrealisations
-
-  }
-
-  PS <- ExtendTable(realisations = temp,
+  IEtable <- ExtendTable(realisations = ALLrealisations,
                     ModelList = ModelList,
                     Indices = Indices, parameters = parameters,
                     ObsIndicesNames = ObsIndicesNames,
@@ -105,7 +103,7 @@ amca <- function(DATA, ResultsFolder, parameters,
   ### PARETO FRONTIER ##########################################################
   # library(emoa)
   # The pareto frontier is only applied to the indices
-  PF <- ParetoFrontier(PS, ObsIndicesNames)
+  PF <- ParetoFrontier(IEtable, ObsIndicesNames)
 
   ### REDUNDANCY REDUCTION #####################################################
   # library(som)
@@ -138,6 +136,6 @@ amca <- function(DATA, ResultsFolder, parameters,
   message(paste("Precision RR (90% P.I.) = ", precisionRE, "%", sep = ""))
   message(paste("Reliability RR (90% P.I.) = ", reliabilityRE, "%", sep = ""))
 
-  return(list("PS" = PS, "PF" = PF, "RE" = RE))
+  return(list("PF" = PF, "RE" = RE))
 
 }

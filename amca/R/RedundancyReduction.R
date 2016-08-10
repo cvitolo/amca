@@ -2,6 +2,8 @@
 #'
 #' @param PF Pareto Frontier
 #' @param observedQ observed discharge (warmup removed)
+#' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
+#' @param deltim time step for FUSE simulations
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
 #' @param ObsIndicesNames is the list of indices names.
 #' @param verbose if set to TRUE it prints running information (default = FALSE)
@@ -13,11 +15,12 @@
 #' @examples
 #' # RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 #'
-RedundancyReduction <- function(PF, observedQ, ResultsFolder,
-                                ObsIndicesNames, verbose=FALSE){
+RedundancyReduction <- function(PF, observedQ, parameters, deltim,
+                                ResultsFolder, ObsIndicesNames, verbose=FALSE){
 
   # Cluster non-dominated simulations
   # library(som)
+  # library(dtw)
 
   # observedQ <- DATA$Q[pperiod]
 
@@ -34,7 +37,6 @@ RedundancyReduction <- function(PF, observedQ, ResultsFolder,
   PF$ClusterY <- the.som$visual[,2]
   PF$dtw_score <- NA
 
-  # library(dtw)
   for ( i in 1:dim(PF)[1] ){
 
     mid <- PF$mid[i]
@@ -44,16 +46,10 @@ RedundancyReduction <- function(PF, observedQ, ResultsFolder,
       print(paste(i, "out of", dim(PF)[1], "- MID", mid, "PID", pid))
     }
 
-    discharges <- NULL
-    load(paste(ResultsFolder, "MID_", mid, ".Rdata", sep=""))
+    simulatedQ <- coredata(fuse(DATA, mid, deltim,
+                                ParameterSet = parameters[pid,])[pperiod])
 
-    if(i == 1){
-      dischargesDTW <- discharges[pid,]
-    }else{
-      dischargesDTW <- rbind(dischargesDTW, discharges[pid,])
-    }
-
-    PF$dtw_score[i] <- dtw(observedQ, discharges[pid,],
+    PF$dtw_score[i] <- dtw(observedQ, simulatedQ,
                            distance.only=TRUE)$normalizedDistance
 
   }

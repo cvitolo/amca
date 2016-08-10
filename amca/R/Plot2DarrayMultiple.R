@@ -52,8 +52,8 @@ Plot2DarrayMultiple <- function(indices,mList){
                               round(0.50*dim(indices)[1],0),
                               round(0.75*dim(indices)[1],0),
                               round(1*dim(indices)[1],0))) +
-    xlab("model structure ID number (MID)") +
-    ylab("parameter set ID number (PID)") +
+    xlab("\n Model structure ID number (MID)") +
+    ylab("Sampled parameter sets") + # Parameter set ID number (PID)
     facet_grid( ~ variable) # + theme(text = element_text(size=24))
 
 }

@@ -4,7 +4,8 @@
 \alias{Simulations2Indices}
 \title{Collate indices of various model structures in one 3-dimensional array.}
 \usage{
-Simulations2Indices(ModelList, ResultsFolder, nParams, nIndices, verbose)
+Simulations2Indices(ModelList, ResultsFolder, nParams, nIndices, verbose,
+  string = "indices")
 }
 \arguments{
 \item{ModelList}{this is the reduced list of model structures (total number: 252)}
@@ -16,6 +17,8 @@ Simulations2Indices(ModelList, ResultsFolder, nParams, nIndices, verbose)
 \item{nIndices}{number of Model Performance Indices (MPIs)}
 
 \item{verbose}{if TRUE, it prints details of the current simulation}
+
+\item{string}{name of the object containing the indices (this is "indices" by default)}
 }
 \value{
 3D arrays containing in the first dimension the parameters, in the second dimension the indices and in the third dimension the model structures.

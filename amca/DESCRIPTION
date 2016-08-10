@@ -1,6 +1,7 @@
 Package: amca
 Type: Package
 Version: 0.4
+Date: 2015
 Title: Automatic Model Configuration Algorithm (AMCA)
 Description: Data mining algorithm based on unsupervised machine learning
     techniques to automatically configure hydrological conceptual
