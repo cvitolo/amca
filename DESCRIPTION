@@ -1,0 +1,32 @@
+Package: amca
+Type: Package
+Version: 0.4
+Date: 2015
+Title: Automatic Model Configuration Algorithm (AMCA)
+Description: Data mining algorithm based on unsupervised machine learning
+    techniques to automatically configure hydrological conceptual
+    rainfall-runoff models.
+Authors@R: as.person(c(
+    "Claudia Vitolo <cvitolodev@gmail.com> [aut, cre]"))
+Author: Claudia Vitolo
+Maintainer: Claudia Vitolo <cvitolodev@gmail.com>
+URL: http://cvitolo.github.io/r_amca/
+BugReports: https://github.com/cvitolo/r_amca/issues
+Depends: R (>= 2.14.0)
+Imports:
+  fuse,
+  zoo,
+  bigmemory,
+  biganalytics,
+  scales,
+  emoa,
+  som,
+  dtw,
+  ggplot2,
+  reshape2,
+  fanplot,
+  colorspace
+License: GPL-3
+Repository: GitHub
+Keywords: hydrology, hydrological modelling, hydrologic modeling
+RoxygenNote: 6.0.1

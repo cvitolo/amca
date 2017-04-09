@@ -8,6 +8,7 @@
 .Rdata
 
 # RStudio files
+amca.Rproj
 .Rproj.user/
 .Rproj.user
 
@@ -19,3 +20,4 @@ r_amca.Rproj
 
 tests/*
 sh/*
+inst/*
