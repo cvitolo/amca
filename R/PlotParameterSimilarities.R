@@ -8,6 +8,8 @@
 #' @param labelPOST label for the posterior
 #'
 #' @return A plot comparing prior and posterior parameter distributions.
+#' 
+#' @export
 #'
 #' @examples
 #' # PlotParameterSimilarities(RealisationsTable, parameters)

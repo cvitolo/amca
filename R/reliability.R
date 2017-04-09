@@ -6,6 +6,8 @@
 #' @param verbose if set to TRUE it prints running information
 #'
 #' @return A plot with QQ plots and results of statistical reliability tests
+#' 
+#' @export
 #'
 #' @examples
 #' # reliability(predDTW,observed,warmupDTW=0,verbose=FALSE)

@@ -3,6 +3,8 @@
 #' @param reduced boolean value. If FALSE the entire model list is taken into account. If FALSE, a reduced version is selected.
 #'
 #' @return table containing Model ID numbers, model options and parameter in use
+#' 
+#' @export
 #'
 #' @examples
 #' # PrepareTable()

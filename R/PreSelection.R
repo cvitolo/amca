@@ -11,6 +11,8 @@
 #' models = row number (row) and model identification number (mid);
 #' params = row number (row) and model identification number (pid), by definition row and pid coincide.
 #'
+#' @export
+#' 
 #' @examples
 #' # PreSelection(ModelList, Indices, threshold)
 #'

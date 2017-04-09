@@ -4,6 +4,8 @@
 #' @param B second matrix
 #'
 #' @return matching row
+#' 
+#' @export
 #'
 #' @examples
 #' # ParetoFrontier(indices[,,selected_models[,"row"]],selected_models,parameters,SelectedIndices)

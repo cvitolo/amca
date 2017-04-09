@@ -13,6 +13,8 @@
 #' @param type If "B" means the reference is min-max. If "P" it means the reference is lower-upper percentile.
 #'
 #' @return A plot comparing ensemble distributions.
+#' 
+#' @export
 #'
 #' @examples
 #' # PlotEnsembles(bounds, dischargeTable)

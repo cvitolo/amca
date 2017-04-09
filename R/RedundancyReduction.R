@@ -12,6 +12,8 @@
 #'
 #' @details This function removes redundant realizations by extracting the realization with the best DTW score from each cluster.
 #'
+#' @export
+#' 
 #' @examples
 #' # RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 #'

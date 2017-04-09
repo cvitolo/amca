@@ -6,6 +6,8 @@
 #' @param ObsIndicesNames this is the list of model performance indices calculated from observations.
 #'
 #' @return Extended data.frame
+#' 
+#' @export
 #'
 #' @examples
 #' # SelectIndices(realisations)

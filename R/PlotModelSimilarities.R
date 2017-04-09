@@ -8,6 +8,8 @@
 #' @param modellingOptions is a vector of labels to specify which modelling options should be used. If set to NULL, it uses all the modelling options.
 #'
 #' @return A plot comparing model similarities.
+#' 
+#' @export
 #'
 #' @examples
 #' # PlotModelSimilarities(ModelList,results$RETable)

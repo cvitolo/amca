@@ -6,6 +6,8 @@
 #' @param discharges is a matrix of simulations
 #'
 #' @return probabilistic efficiency
+#' 
+#' @export
 #'
 #' @examples
 #' # pNS(Qobs, discharges)

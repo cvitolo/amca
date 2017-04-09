@@ -10,6 +10,8 @@
 #' @param deltim time step for FUSE simulations
 #'
 #' @return A list of suggested model configurations.
+#' 
+#' @export
 #'
 #' @examples
 #' # results <- amca(DATA, ResultsFolder)

@@ -3,6 +3,8 @@
 #' @param numericalOption numerical option defining the compone component
 #'
 #' @return labels
+#' 
+#' @export
 #'
 #' @examples
 #' # LabelOptions(numericalOption)

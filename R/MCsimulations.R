@@ -10,6 +10,8 @@
 #' @param verbose if TRUE, it prints details of the current simulation
 #'
 #' @return 2 arrays: R (discharges) and S (indices).
+#' 
+#' @export
 #'
 #' @examples
 #' # MCsimulations(DATA,deltim,warmup,parameters,ListOfModels,SimulationFolder,MPIs)

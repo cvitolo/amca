@@ -4,6 +4,8 @@
 #' @param modellingOptions vector containing the names of modelling options (default is c("rferr","arch1","arch2","qsurf","qperc","esoil","qintf","q_tdh"))
 #'
 #' @return data.frame containing the relative frequency in a new column
+#' 
+#' @export
 #'
 #' @examples
 #' # RelativeFrequency(REtable,modellingOptions)

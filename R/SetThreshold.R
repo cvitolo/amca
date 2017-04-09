@@ -9,6 +9,8 @@
 #' @param verbose if set to TRUE it prints running information and a plot showing the threshold.
 #'
 #' @return A number between 0 and 1
+#' 
+#' @export
 #'
 #' @examples
 #' # SetThreshold(ModelList, Indices)
