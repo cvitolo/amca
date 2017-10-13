@@ -9,7 +9,7 @@ This is a data mining procedure based on unsupervised machine learning
 techniques to automatically configure hydrological conceptual rainfall-runoff models such as FUSE.
 
 **To cite this software:**  
-Vitolo C., Automatic Model Configuration Algorithm (AMCA, R-package), (2015), GitHub repository, https://github.com/cvitolo/r_amca, doi: http://dx.doi.org/10.5281/zenodo.15721
+Vitolo C., Automatic Model Configuration Algorithm (AMCA, R-package), (2015), GitHub repository, https://github.com/cvitolo/amca, doi: http://dx.doi.org/10.5281/zenodo.15721
 
 #### Basics
 Install and load packages
@@ -26,7 +26,7 @@ lapply(x, require, character.only=T); rm(x)
 # Install dependent gists and packages from github:
 library(devtools)
 install_github("cvitolo/r_pure", subdir = "pure")
-install_github("cvitolo/r_amca", subdir = "amca")
+install_github("cvitolo/amca")
 ```
 
 ### Rainfall-Runoff modelling using FUSE
