@@ -11,21 +11,15 @@ techniques to automatically configure hydrological conceptual rainfall-runoff mo
 **To cite this software:**  
 Vitolo C., Automatic Model Configuration Algorithm (AMCA, R-package), (2015), GitHub repository, https://github.com/cvitolo/amca, doi: http://dx.doi.org/10.5281/zenodo.15721
 
-#### Basics
+#### Installation
 Install and load packages
 ```R
-# Install dependent packages from CRAN:
-x <- c("qualV", "ggplot2", "emoa", "som", "dtw", "tgp", "devtools",
-       "reshape2", "colorspace", "RColorBrewer","zoo","tiger")
-install.packages(x)
-lapply(x, require, character.only=T); rm(x)
-
-# Install dependent package from R-Forge:
-# install.packages("fuse", repos="http://R-Forge.R-project.org")
-
-# Install dependent gists and packages from github:
+# Install dependent packages from CRAN and GitHub:
+install.packages(c("devtools", "tiger", "qualV"))
 library(devtools)
-install_github("cvitolo/r_pure", subdir = "pure")
+install_github("cvitolo/fuse")
+
+# Install the amca package
 install_github("cvitolo/amca")
 ```
 
@@ -35,58 +29,43 @@ As an example, we could combine 50 parameter sets and 4 model structures to gene
 Sample 50 parameter sets for FUSE, using LHS method
 ```R
 library(fuse)
-data(DATA)
+data("fuse_hydrological_timeseries")
 
-outputFolder <- "~"
-deltim <- 1/24 
-warmup <- round(dim(DATA)[1]/10,0)
-
-NumberOfRuns <- 10
 set.seed(123)    
-parameters <- GeneratePsetsFUSE(NumberOfRuns)
+parameters <- fuse::generateParameters(NumberOfRuns = 500)
 ```
 
 Choose a list of models to take into account
 ```R
-selectedModels <- c(60,230,342,426) 
-```
-
-Define the list of Model Performance Indices (MPIs)
-```R
-library(tiger)
-library(qualV)
-LAGTIME = function(x) lagtime(x$Qo,x$Qs)    
-MAE     = function(x) mean(x$Qs - x$Qo, na.rm = TRUE)            
-NSHF    = function(x) 1 - EF(x$Qo,x$Qs)           
-NSLF    = function(x) 1 - EF( log(x$Qo) , log(x$Qs) )           
-RR      = function(x) sum(x$Qs) /sum(x$Po)
-
-MPIs <- list("LAGTIME"=LAGTIME,"MAE"=MAE,"NSHF"=NSHF,"NSLF"=NSLF,"RR"=RR)
+selectedModels <- c(60, 230, 342, 426) 
 ```
 
 Run simulations
 ```R
-# It is recommended to run simulations on HPC facilities. 
-# However small batches can be run locally using the function MCsimulations()
-library(pure)
-MCsimulations(DATA,deltim,warmup,parameters,selectedModels,outputFolder,MPIs)
+library(amca)
+amca::MCsimulations(DATA = fuse_hydrological_timeseries,
+                    parameters = parameters,
+                    deltim = 1/24,
+                    warmup = 500,
+                    ListOfModels = selectedModels)
 ```
 
 ### Find the best configuration(s) amongst those simulated
 Run the AMCA algorithm:
 ```R
-library(amca)
-results <- amca(DATA, parameters, MPIs, outputFolder, deltim,
-                selectedModels=selectedModels, warmup, verbose=FALSE,
-                PreSel=TRUE,allBounds=FALSE)
+results <- amca(DATA = fuse_hydrological_timeseries,
+                parameters = parameters,
+                deltim = 1/24,
+                warmup = 500,
+                selectedModels = selectedModels)
 ```
 
 The best configuration is stored in
 ```R
-results$RETable
+results$RE
 
-PlotEnsembles(results$BoundsRE$bounds, results$BoundsRE$discharges,
-              label1="min-max", label2="percentiles")
+PlotEnsembles(bounds = results$ts$bounds,
+              dischargeTable = results$ts$discharges)
 ```
 
 ### Warnings

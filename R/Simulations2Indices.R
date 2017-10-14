@@ -30,8 +30,8 @@ Simulations2Indices <- function(ModelList, ResultsFolder,
     }
 
     indices <- NULL
-    load( paste(ResultsFolder,"/MID_",mid,".Rdata",sep="") )
-    indices <- eval(parse(text = string))
+    load(file.path(ResultsFolder, paste0("MID_", mid, ".Rdata")))
+    # indices <- eval(parse(text = string))
 
     mcounter <- mcounter + 1
     x[,,mcounter] <- as.matrix(indices[1:nParams,])

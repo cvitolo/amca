@@ -1,9 +1,11 @@
 #' Redundancy reduction process using SOM clustering and Dynamic Time Warping.
 #'
+#' @param DATA This is a data.frame containing the observed time series (zoo objects). It is structured into three columns: P containing precipitation, E containing potential evapotranspiration and Q containing streamflow discharge.
 #' @param PF Pareto Frontier
 #' @param observedQ observed discharge (warmup removed)
 #' @param parameters This is a named data frame containing the parameter table, where each column corresponds to a parameter and each row to a realization.
 #' @param deltim time step for FUSE simulations
+#' @param warmup Percentage of initial time steps to ignore (default is 0.5 that corresponds to 50 percent of the full length).
 #' @param ResultsFolder Path to the folder containing results from MC simulations.
 #' @param ObsIndicesNames is the list of indices names.
 #' @param verbose if set to TRUE it prints running information (default = FALSE)
@@ -17,23 +19,22 @@
 #' @examples
 #' # RedundancyReduction(PF, observedQ, ResultsFolder, ObsIndicesNames)
 #'
-RedundancyReduction <- function(PF, observedQ, parameters, deltim,
+RedundancyReduction <- function(DATA, PF, observedQ, parameters, deltim, warmup,
                                 ResultsFolder, ObsIndicesNames, verbose=FALSE){
 
   # Cluster non-dominated simulations
-  # library(som)
-  # library(dtw)
-
-  # observedQ <- DATA$Q[pperiod]
-
+  pperiod <- (warmup + 1):dim(DATA)[1]
   dimX <- ceiling(sqrt(dim(PF)[1]))
   dimY <- ceiling(dim(PF)[1]/dimX)
 
   PFnumeric <- apply(PF[,ObsIndicesNames], 2, as.numeric)
 
-  the.som <- som(PFnumeric,
-                 xdim=dimX, ydim=dimY,
-                 init="linear",neigh="gaussian",topol="rect")
+  the.som <- som::som(PFnumeric,
+                      xdim = dimX,
+                      ydim = dimY,
+                      init = "linear",
+                      neigh = "gaussian",
+                      topol = "rect")
 
   PF$ClusterX <- the.som$visual[,1]
   PF$ClusterY <- the.som$visual[,2]
@@ -48,10 +49,10 @@ RedundancyReduction <- function(PF, observedQ, parameters, deltim,
       print(paste(i, "out of", dim(PF)[1], "- MID", mid, "PID", pid))
     }
 
-    simulatedQ <- coredata(fuse(DATA, mid, deltim,
-                                ParameterSet = parameters[pid,])[pperiod])
+    simulatedQ <- zoo::coredata(fuse(DATA, mid, deltim,
+                                     ParameterSet = parameters[pid,])[pperiod])
 
-    PF$dtw_score[i] <- dtw(observedQ, simulatedQ,
+    PF$dtw_score[i] <- dtw::dtw(observedQ, simulatedQ,
                            distance.only=TRUE)$normalizedDistance
 
   }

@@ -1,9 +1,9 @@
 #' This function runs Monte Carlo simulations for a given number of realisations.
 #'
 #' @param DATA this is the data frame containing the observations
+#' @param parameters table containing the parameter sets, see \code{GeneratePsetsFUSE}
 #' @param deltim this is the time step (in days)
 #' @param warmup this is the warmup period
-#' @param parameters table containing the parameter sets, see \code{GeneratePsetsFUSE}
 #' @param ListOfModels this is the reduced list of model structures (default = 1:1248)
 #' @param SimulationFolder path to the folder where the function saves the results
 #' @param MPIs list of functions describing the Model performance Indices
@@ -17,12 +17,28 @@
 #' # MCsimulations(DATA,deltim,warmup,parameters,ListOfModels,SimulationFolder,MPIs)
 #'
 
-MCsimulations <- function(DATA,deltim,warmup,parameters,
+MCsimulations <- function(DATA,
+                          parameters,
+                          deltim = 1,
+                          warmup = 0,
                           ListOfModels=1:1248,
-                          SimulationFolder, MPIs,
-                          verbose=TRUE){
+                          SimulationFolder = getwd(),
+                          MPIs = NULL,
+                          verbose = TRUE){
 
-  # library(fuse)
+  if (is.null(MPIs)) {
+
+    message("Default MPIs are used, see documentation for more information")
+
+    LAGTIME = function(x) tiger::lagtime(x$Qo, x$Qs)    
+    MAE     = function(x) mean(x$Qs - x$Qo, na.rm = TRUE)            
+    NSHF    = function(x) 1 - qualV::EF(x$Qo, x$Qs)           
+    NSLF    = function(x) 1 - qualV::EF(log(x$Qo), log(x$Qs))           
+    RR      = function(x) sum(x$Qs) / sum(x$Po)
+
+    MPIs <- list("LAGTIME"=LAGTIME,"MAE"=MAE,"NSHF"=NSHF,"NSLF"=NSLF,"RR"=RR)
+
+  }
 
   for (i in 1:length(ListOfModels)){
 
@@ -36,12 +52,17 @@ MCsimulations <- function(DATA,deltim,warmup,parameters,
 
     for (pid in 1:dim(parameters)[1]){
 
-      if (verbose==TRUE) print(paste("Current configuration: model ",
-                                     mid," - parameter set ",pid))
+      if (verbose == TRUE) {
+        print(paste("Current configuration: model ",
+                    mid," - parameter set ",pid))
+      }
 
       ParameterSet <- as.list(parameters[pid,])
 
-      q_routed <- fuse(DATA, ParameterSet, deltim, mid)
+      q_routed <- fuse(DATA = DATA,
+                       mid = mid,
+                       deltim = deltim,
+                       ParameterSet = ParameterSet)
 
       x <- data.frame( Po = DATA[(warmup + 1):dim(DATA)[1],"P"],
                        Qo = DATA[(warmup + 1):dim(DATA)[1],"Q"],

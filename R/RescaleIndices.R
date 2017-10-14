@@ -23,7 +23,7 @@ RescaleIndices <- function(Indices) {
     # print(i)
     x <- quantile(na.omit(Indices[,i,]), 0.99)
     Indices[,i,][Indices[,i,] > x] <- x
-    Indices[,i,] <- rescale(Indices[,i,], to=c(0,1))
+    Indices[,i,] <- scales::rescale(Indices[,i,], to=c(0,1))
 
   }
 

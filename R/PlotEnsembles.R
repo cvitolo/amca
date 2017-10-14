@@ -20,35 +20,41 @@
 #' # PlotEnsembles(bounds, dischargeTable)
 #'
 
-PlotEnsembles <- function(bounds, dischargeTable,lowerP=5,upperP=95,
-                          label1="T limits",label2="T' percentiles",type="B"){
+PlotEnsembles <- function(bounds,
+                          dischargeTable,
+                          lowerP = 5,
+                          upperP = 95,
+                          label = "percentiles",
+                          type = "B"){
 
   # require(fanplot)
   # require(colorspace)
   # require(RColorBrewer)
 
   if (type=="P"){
-    L <- bounds$LP
-    U <- bounds$UP
+    L <- bounds$minQ
+    U <- bounds$maxQ
     boundsMax <- max(unlist(U),unlist(dischargeTable))
    boundsMin <- min(unlist(L),unlist(dischargeTable))
   }else{
-    L <- bounds$LB
-    U <- bounds$UB
+    L <- bounds$lQ
+    U <- bounds$uQ
     boundsMax <- max(U)
     boundsMin <- min(L)
   }
 
-  plot(NULL, xlim = c(-15, dim(dischargeTable)[2]+15),
-       ylim =c(boundsMin,boundsMax),
-       main="", xlab="",ylab="Discharge [mm/d]",xaxt="n")
+  plot(NULL,
+       xlim = c(-15, dim(dischargeTable)[2] + 15),
+       ylim = c(boundsMin, boundsMax),
+       main = "", xlab = "", ylab = "Discharge [mm/d]", xaxt = "n")
 
-  fan(data = dischargeTable, fan.col = sequential_hcl, ln=0, alpha=0.5)
-  fan(dischargeTable, ln=c(lowerP, upperP), llab=TRUE, alpha=0, ln.col="red")
+  fanplot::fan(data = dischargeTable,
+               fan.col = colorspace::sequential_hcl,
+               ln = 0,
+               alpha = 0.5)
+  fanplot::fan(dischargeTable, ln=c(lowerP, upperP), llab=TRUE, alpha=0, ln.col="red")
 
   lines(bounds$Qobs, col="black", lwd=3)
-  lines(U, col="black", lwd=1, lty=2)
-  lines(L, col="black", lwd=1, lty=2)
 
   mySeq <- c(length(bounds$Dates)%%5,
              round(length(bounds$Dates)/5,0),
@@ -61,13 +67,13 @@ PlotEnsembles <- function(bounds, dischargeTable,lowerP=5,upperP=95,
   axis(1, at=mySeq, labels=myLabels)
 
   legend("topright",
-         c("Observations", label1, label2),
+         c("Observations", label),
          horiz = FALSE,
          y.intersp=0.5,
          bty = "n",
-         lwd =c(3, 1, 1),
-         lty = c(1, 2, 1),
-         col = c("black","black","red"),
+         lwd =c(3, 1),
+         lty = c(1, 1),
+         col = c("black","red"),
          cex = 1)
 
 }

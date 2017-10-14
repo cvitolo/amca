@@ -27,7 +27,7 @@ BuildEnsemble <- function(observedQ, SimulationFolder, realisations,
 
   if (minmaxOnly){
 
-    message("Only min and max are calculated, bigfile(outputQ/lowerP/upperP arguments are ignored.")
+    # message("Only min and max are calculated, bigfile/outputQ/lowerP/upperP arguments are ignored.")
 
     MIDs <- as.numeric(as.character(unique(realisations$mid)))
     Amin <- matrix(NA, nrow=length(MIDs), ncol=length(observedQ))
@@ -39,7 +39,7 @@ BuildEnsemble <- function(observedQ, SimulationFolder, realisations,
         print(paste("FUN: BuildEnsemble - Opening MID ", mid, sep=""))
       }
 
-      load(paste(SimulationFolder, "MID_", mid, ".Rdata", sep=""))
+      load(file.path(SimulationFolder, paste0("MID_", mid, ".Rdata")))
       Amin[i,] <- apply(discharges, 2, min, na.rm = TRUE)
       Amax[i,] <- apply(discharges, 2, max, na.rm = TRUE)
       i <- i + 1
