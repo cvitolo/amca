@@ -32,7 +32,7 @@ library(fuse)
 data("fuse_hydrological_timeseries")
 
 set.seed(123)    
-parameters <- fuse::generateParameters(NumberOfRuns = 500)
+parameters <- fuse::generateParameters(NumberOfRuns = 50)
 ```
 
 Choose a list of models to take into account
